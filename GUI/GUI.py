@@ -4,7 +4,7 @@ from tkinter import LEFT, TOP, X, FLAT, RAISED
 from threading import Thread
 import time
 from Modules import csrf
-# import RPi.GPIO as GPIO
+
 try:    
     import adc as ADC
 except:
@@ -420,6 +420,14 @@ class Home(tk.Frame):# Main page
 
         self.lanse_Type = tk.StringVar()
         self.lanse_plassering = tk.StringVar()
+        self.serverHent = tk.StringVar()
+
+        try:
+            testData = csrf.serverCom("bronn2", 1, {})
+            print(testData["lansetype"]["lansetype"])
+            self.serverHent.set(testData["lansetype"]["lansetype"])
+        except:
+            print('nei')
 
         with open(lanse_info, "r") as f:  # leser av lansetype
             s = f.read()
@@ -443,6 +451,8 @@ class Home(tk.Frame):# Main page
         label.grid(row=0)
         labe2 = tk.Label(self, textvariable=self.lanse_plassering, font=LARGE_FONT)
         labe2.grid(row=1)
+        label3 = tk.Label(self, textvariable=self.serverHent, font=LARGE_FONT)
+        label3.grid(row=3)
 
 
 def midl():
