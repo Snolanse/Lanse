@@ -110,7 +110,7 @@ class AppGui(tk.Tk):  # Main GUI class (Dette er controller)
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
-        tk.Tk.iconbitmap(self, default="standard_trondheim.ico")  # Sets GUI icon
+        # tk.Tk.iconbitmap(self, default="standard_trondheim.ico")  # Sets GUI icon
         tk.Tk.wm_title(self, "Snøstyring")  # Sets GUI title
 
         container = tk.Frame(self)
