@@ -7,8 +7,11 @@ from Modules import csrf
 
 try:    
     import adc as ADC
+    import RPi.GPIO as GPIO
+    rpi = 1
 except:
-    print("feil med import av adc")
+    print("feil med import av adc eller noe annet")
+    rpi = 0
 
 # Global variables------------------------------------------------------------------------------------------------------
 
@@ -17,7 +20,15 @@ placement = None
 creds = 'tempfile.temp' # Variable that becomes login data document
 lanse_info = "lanse.temp"  # Lagret lansetype
 plass_info = "plass.temp"  # Lagret plassering
+analoge_maalinger = "maal.temp"
 LARGE_FONT = ("Verdana", 12)# Font type og størrelse
+
+if rpi == 1:
+    GPIO.setmode(GPIO.BOARD)       # Numbers GPIOs by physical location
+    GPIO.setup(8, GPIO.OUT)
+    GPIO.setup(9, GPIO.OUT)
+
+
 
 # Functions ------------------------------------------------------------------------------------------------------------
 
@@ -385,7 +396,7 @@ class MaalingPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
-        defVal = "one"
+        defVal = "Udefinert"
         # var2 = True
 
         self.var = {}
@@ -399,7 +410,7 @@ class MaalingPage(tk.Frame):
             self.var3["variable{}".format(str(x))].set(defVal)
 
         for x in range(8):
-            maalTyp0 = tk.OptionMenu(self, self.var["variable{}".format(str(x))], "one", "two", "three")
+            maalTyp0 = tk.OptionMenu(self, self.var["variable{}".format(str(x))], "Udefinert", "TG3", "Viking V2")
             maalTyp0.grid(row=x, column=1)
             c = tk.Checkbutton(self, text="Analog inngang {}".format(str(x)), variable=self.var2["variable{}".format(str(x))])
             c.grid(row=x, column=0)
@@ -457,16 +468,39 @@ class Home(tk.Frame):# Main page
 
 
 def midl():
-    count = 0
-    while count < 100:
-        count = count + 1
-        try:
-            v = ADC.lesADC(2)
-        except:
-            v = "feil"
-        app.frames[MaalingPage].var3['variable2'].set(str(v))
-        app.frames[MaalingPage].var3['variable7'].set(str(count))
-        time.sleep(1)
+    try:
+        while True:
+
+            for i in range(8):
+                if app.frames[MaalingPage].var2['variable' + str(i)].get() == True:
+                    a = ADC.lesADC(i)
+                    app.frames[MaalingPage].var3['variable' + str(i)].set(a)
+                    #with open(analoge_maalinger, "r") as f:  # leser av lansetype
+                    #    f.write(str(a))
+                    #    f.close()
+                else:
+                    app.frames[MaalingPage].var3['variable' + str(i)].set("Ikke i bruk")
+
+            time.sleep(1)
+    except:
+        print("ADC crash")
+
+
+def serverLed(id):
+    try:
+        while True:
+            listen = csrf.serverCom(id, 1, {})
+            print(str(listen))
+
+            if listen["lanse"]["man_steg"] == 1:
+                GPIO.output(8, GPIO.HIGH)
+            else:
+                GPIO.output(8, GPIO.LOW)
+
+            time.sleep(10)
+
+    except:
+        print("Error, hører ikke etter")
 
 
 #"Main loop"------------------------------------------------------------------------------------------------------------
@@ -474,6 +508,8 @@ if __name__ == "__main__":
 
     app = AppGui()
 
+    t2= Thread(target=serverLed, args=("bronn2",), daemon=True)
+    t2.start()
     t = Thread(target=midl, daemon=True)  # Lager en thread for en spesifikk oppgave
     t.start()  # Starter threaden
 
