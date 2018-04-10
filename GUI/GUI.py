@@ -423,6 +423,7 @@ class Home(tk.Frame):# Main page
         self.serverHent = tk.StringVar()
 
         try:
+            csrf.serverCom("bronn2", 0, {"vtrykk":4})
             testData = csrf.serverCom("bronn2", 1, {})
             print(testData["lansetype"]["lansetype"])
             self.serverHent.set(testData["lansetype"]["lansetype"])
