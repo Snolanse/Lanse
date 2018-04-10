@@ -4,7 +4,10 @@ from tkinter import LEFT, TOP, X, FLAT, RAISED
 from threading import Thread
 import time
 # import RPi.GPIO as GPIO
-import adc as ADC
+try:    
+    import adc as ADC
+except:
+    print("feil med import av adc")
 
 # Global variables------------------------------------------------------------------------------------------------------
 
@@ -445,7 +448,10 @@ def midl():
     count = 0
     while count < 100:
         count = count + 1
-        v = ADC.lesADC(2)
+        try:
+            v = ADC.lesADC(2)
+        except:
+            v = "feil"
         app.frames[MaalingPage].var3['variable2'].set(str(v))
         app.frames[MaalingPage].var3['variable7'].set(str(count))
         time.sleep(1)
