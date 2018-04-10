@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import LEFT, TOP, X, FLAT, RAISED
 from threading import Thread
 import time
+from modules import csrf
 # import RPi.GPIO as GPIO
 try:    
     import adc as ADC

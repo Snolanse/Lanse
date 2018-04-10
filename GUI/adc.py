@@ -1,5 +1,5 @@
 import Adafruit_GPIO.SPI as SPI
-import Modules
+from Modules.MCP3008 import MCP3008
 import time
 
 # Software SPI
@@ -12,7 +12,7 @@ import time
 # Hardware SPI
 SPI_PORT   = 0
 SPI_DEVICE = 0
-mcp = Modules.MCP3008(spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE))
+mcp = MCP3008.MCP3008(spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE))
 
 def lesADC(channel):
     # do shit
