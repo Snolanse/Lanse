@@ -1,20 +1,21 @@
-#Imports----------------------------------------------------------------------------------------------------------------
+# Imports---------------------------------------------------------------------------------------------------------------
 import tkinter as tk
 from tkinter import LEFT, TOP, X, FLAT, RAISED
 from threading import Thread
 import time
-#import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
+import adc as ADC
 
-#Global variables-------------------------------------------------------------------------------------------------------
+# Global variables------------------------------------------------------------------------------------------------------
 
 lanse_type = None
 placement = None
 creds = 'tempfile.temp' # Variable that becomes login data document
 lanse_info = "lanse.temp"  # Lagret lansetype
 plass_info = "plass.temp"  # Lagret plassering
-LARGE_FONT = ("Verdana", 12)# Used to store font type
+LARGE_FONT = ("Verdana", 12)# Font type og størrelse
 
-#Functions -------------------------------------------------------------------------------------------------------------
+# Functions ------------------------------------------------------------------------------------------------------------
 
 
 def CheckLogin(cntrl,nameEL,pwordEL):  # Used to check if username and password is correct.
@@ -421,7 +422,7 @@ class Home(tk.Frame):# Main page
             f.close()
 
             if s == "":
-                self.lanse_Type.set("Type: " + 'Ikke definert')
+                self.lanse_Type.set("Type: " + 'Ikke definert')  # Udefinert dersom lanse.temp er tom
             else:
                 self.lanse_Type.set("Type: " + s)
 
@@ -430,7 +431,7 @@ class Home(tk.Frame):# Main page
             f.close()
 
             if s == "":
-                self.lanse_plassering.set("Plassering: " + 'Ikke definert')
+                self.lanse_plassering.set("Plassering: " + 'Ikke definert')  # Udefinert dersom plass.temp er tom
             else:
                 self.lanse_plassering.set("Plassering: " + s)
 
@@ -444,6 +445,8 @@ def midl():
     count = 0
     while count < 100:
         count = count + 1
+        v = ADC.lesADC(2)
+        app.frames[MaalingPage].var3['variable2'].set(str(v))
         app.frames[MaalingPage].var3['variable7'].set(str(count))
         time.sleep(1)
 

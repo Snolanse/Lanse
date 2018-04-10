@@ -2,11 +2,19 @@ import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
 import time
 
-class adc():
-    def __init__(self):
-        self.mcp = Adafruit_MCP3008.MCP3008(clk=18, cs=25, miso=23, mosi=24)
+# Software SPI
+# CLK  = 18
+# MISO = 23
+# MOSI = 24
+# CS   = 25
+# mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
 
-    def lesADC(self,channel):
-        #doshit
-        verdi = self.mcp.read_adc(channel)
-        return verdi
+# Hardware SPI
+SPI_PORT   = 0
+SPI_DEVICE = 0
+mcp = Adafruit_MCP3008.MCP3008(spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE))
+
+def lesADC(channel):
+    # do shit
+    verdi = mcp.read_adc(channel)
+    return verdi
