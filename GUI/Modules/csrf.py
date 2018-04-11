@@ -3,7 +3,7 @@ import json
 
 def serverCom(bronnid, get, sdata):
 
-    url1 = "http://192.168.0.101:8000"
+    url1 = "http://192.168.0.101:8000/csrf"
     url2 = "http://192.168.0.101:8000/test"
     client = requests.session()
     client.get(url1)
