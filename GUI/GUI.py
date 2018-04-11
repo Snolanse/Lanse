@@ -1,22 +1,26 @@
 # Imports---------------------------------------------------------------------------------------------------------------
+import os
+import platform
+import time
 import tkinter as tk
 from tkinter import LEFT, TOP, X, FLAT, RAISED
 from threading import Thread
-import time
 from Modules import csrf
 
-try:    
+if os == "posix" and platform.system() == "Linux":
     import adc as ADC
     import RPi.GPIO as GPIO
     rpi = 1
-except:
-    print("feil med import av adc eller noe annet")
+else:
+    print("Feil: programmvare kjøres fra feil platform eller os")
     rpi = 0
 
 # Global variables------------------------------------------------------------------------------------------------------
 
 lanse_type = None
 placement = None
+auto_man = 0
+lanse_steg = 0
 creds = 'tempfile.temp' # Variable that becomes login data document
 lanse_info = "lanse.temp"  # Lagret lansetype
 plass_info = "plass.temp"  # Lagret plassering
@@ -120,14 +124,14 @@ def FSSignup(cntrl, jump):  # Used to add a user to the GUI. So far only one use
             cntrl.show_frame(Home)
             print("Bruker registrert \n Brukernavn:", nameE, "\n Passord   :", pwordE)
 
-
-#Classes----------------------------------------------------------------------------------------------------------------
+# Classes---------------------------------------------------------------------------------------------------------------
 class AppGui(tk.Tk):  # Main GUI class (Dette er controller)
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
-        # tk.Tk.iconbitmap(self, default="standard_trondheim.ico")  # Sets GUI icon
         tk.Tk.wm_title(self, "Snøstyring")  # Sets GUI title
+        if rpi == 0:
+            tk.Tk.iconbitmap(self, default="standard_trondheim.ico")  # Sets GUI icon if not on rpi
 
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)  # Define window
@@ -145,13 +149,15 @@ class AppGui(tk.Tk):  # Main GUI class (Dette er controller)
         maalingButton = tk.Button(toolbar, text="Målinger", command=lambda: self.show_frame(MaalingPage))
         maalingButton.pack(side=LEFT, padx=2, pady=2)
 
+        styringButton = tk.Button(toolbar, text="Styring", command=lambda: self.show_frame(StyringPage))
+        styringButton.pack(side=LEFT, padx=2, pady=2)
+
         toolbar.pack(side=TOP, fill=X)
 
         self.frames = {}
 
 
-        for F in (Home, SnTypePage2, PlacementPage, MaalingPage):  # Includes all pages, old:(Signup, Login, SnTypePage, ReLogin)
-
+        for F in (Home, SnTypePage2, PlacementPage, MaalingPage, StyringPage):  # Includes all pages, old:(Signup, Login, SnTypePage, ReLogin)
 
             frame = F(container, self)
             self.frames[F] = frame
@@ -392,7 +398,7 @@ class PlacementPage(tk.Frame):  # This has to be cleaned up
         toolbar.pack(side=LEFT)
 
 
-class MaalingPage(tk.Frame):
+class MaalingPage(tk.Frame):  # Side for målinger
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -411,21 +417,31 @@ class MaalingPage(tk.Frame):
             self.var3["variable{}".format(str(x))].set(defVal)
 
         for x in range(8):
-            maalTyp0 = tk.OptionMenu(self, self.var["variable{}".format(str(x))], "Udefinert", "Vanntrykk", "Lufttrykk", "Vannstrøm", "Vanntemp")
-            maalTyp0.grid(row=x, column=1)
-            c = tk.Checkbutton(self, text="Analog inngang {}".format(str(x)), variable=self.var2["variable{}".format(str(x))])
+            maalTyp = tk.OptionMenu(self, self.var["variable{}".format(str(x))],
+                                     "Udefinert", "Vanntrykk", "Lufttrykk", "Vannstrøm", "Vanntemp")
+            maalTyp.grid(row=x, column=1)
+            c = tk.Checkbutton(self, text="Analog inngang {}".format(str(x)),
+                               variable=self.var2["variable{}".format(str(x))])
             c.grid(row=x, column=0)
             labelq = tk.Label(self, textvariable=self.var3["variable{}".format(str(x))])
             labelq.grid(row=x, column=2)
-            #     app.frames[MaalingPage].var3['variable7'].set('gg')
+            #  app.frames[MaalingPage].var3['variable7'].set('gg')
 
-    def contUpdate(self,value,attr,element):
-        setattr(attr,element,value)
-        #delay
-        contUpdate(self,value,attr,element)
+    #def contUpdate(self,value,attr,element):
+    #    setattr(attr,element,value)
+    #    #delay
+    #    contUpdate(self,value,attr,element)
 
 
-class Home(tk.Frame):# Main page
+class StyringPage:  # Side for styring
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+
+        defVal = "Udefinert"
+
+
+class Home(tk.Frame):  # Main page
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -435,7 +451,7 @@ class Home(tk.Frame):# Main page
         self.serverHent = tk.StringVar()
 
         try:  # Testing
-            # csrf.serverCom("bronn2", 0, {"vtrykk":4})  # Oppdatere informasjon på database
+            csrf.serverCom("bronn2", 0, {"vtrykk":4})  # Oppdatere informasjon på database
             testData = csrf.serverCom("bronn2", 1, {})  # Hente informasjon fra database
             print("Brønn 2 har lanse " + testData["lansetype"]["lansetype"])  # Debug
             self.serverHent.set(testData["lansetype"]["lansetype"])  # Endre GUI basert på database
@@ -476,7 +492,7 @@ def midl():
                 if app.frames[MaalingPage].var2['variable' + str(i)].get() == True:
                     a = ADC.lesADC(i)
                     app.frames[MaalingPage].var3['variable' + str(i)].set(a)
-                    #with open(analoge_maalinger, "r") as f:  # leser av lansetype
+                    #with open(analoge_maalinger, "r") as f:  # lagrer målinger
                     #    f.write(str(a))
                     #    f.close()
                 else:
