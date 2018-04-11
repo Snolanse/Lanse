@@ -26,8 +26,9 @@ LARGE_FONT = ("Verdana", 12)# Font type og størrelse
 if rpi == 1:
     GPIO.setmode(GPIO.BOARD)       # Numbers GPIOs by physical location
     GPIO.setup(8, GPIO.OUT)
-    GPIO.setup(9, GPIO.OUT)
-
+    GPIO.setup(10, GPIO.OUT)
+    GPIO.output(8, GPIO.LOW)
+    GPIO.output(10, GPIO.LOW)
 
 
 # Functions ------------------------------------------------------------------------------------------------------------
@@ -253,16 +254,16 @@ class SnTypePage2(tk.Frame): # Snowgun type page
         label = tk.Label(self, text="Hvilken type lanse er dette?", font=LARGE_FONT)
         label.grid(sticky="N")
 
-        button0 = tk.Button(self, text="Ikke regulerbar",
-                            command=lambda: lanseType("Ikke regulerbar", 0, controller))
+        button0 = tk.Button(self, text="Udefinert",
+                            command=lambda: lanseType("Udefinert", 0, controller))
         button0.grid(row=1, sticky="W")
 
-        button1 = tk.Button(self, text="2-trinn",
-                                command=lambda: lanseType("2-trinn", 0, controller))
+        button1 = tk.Button(self, text="Snökanon TG3",
+                                command=lambda: lanseType("Snökanon TG3", 0, controller))
         button1.grid(row=2, sticky="W")
 
-        button2 = tk.Button(self, text="3-trinn",
-                                command=lambda: lanseType("3-trinn", 0, controller))
+        button2 = tk.Button(self, text="Viking V2",
+                                command=lambda: lanseType("Viking V2", 0, controller))
         button2.grid(row=3,sticky="W")
 
 '''
@@ -410,7 +411,7 @@ class MaalingPage(tk.Frame):
             self.var3["variable{}".format(str(x))].set(defVal)
 
         for x in range(8):
-            maalTyp0 = tk.OptionMenu(self, self.var["variable{}".format(str(x))], "Udefinert", "TG3", "Viking V2")
+            maalTyp0 = tk.OptionMenu(self, self.var["variable{}".format(str(x))], "Udefinert", "Vanntrykk", "Lufttrykk", "Vannstrøm", "Vanntemp")
             maalTyp0.grid(row=x, column=1)
             c = tk.Checkbutton(self, text="Analog inngang {}".format(str(x)), variable=self.var2["variable{}".format(str(x))])
             c.grid(row=x, column=0)
@@ -433,13 +434,13 @@ class Home(tk.Frame):# Main page
         self.lanse_plassering = tk.StringVar()
         self.serverHent = tk.StringVar()
 
-        try:
-            csrf.serverCom("bronn2", 0, {"vtrykk":4})
-            testData = csrf.serverCom("bronn2", 1, {})
-            print(testData["lansetype"]["lansetype"])
-            self.serverHent.set(testData["lansetype"]["lansetype"])
+        try:  # Testing
+            # csrf.serverCom("bronn2", 0, {"vtrykk":4})  # Oppdatere informasjon på database
+            testData = csrf.serverCom("bronn2", 1, {})  # Hente informasjon fra database
+            print("Brønn 2 har lanse " + testData["lansetype"]["lansetype"])  # Debug
+            self.serverHent.set(testData["lansetype"]["lansetype"])  # Endre GUI basert på database
         except:
-            print('nei')
+            print('Feil: mangler forbindelse til server')
 
         with open(lanse_info, "r") as f:  # leser av lansetype
             s = f.read()
@@ -483,7 +484,7 @@ def midl():
 
             time.sleep(1)
     except:
-        print("ADC crash")
+        print("Feil: ADC crash")
 
 
 def serverLed(id):
@@ -500,7 +501,7 @@ def serverLed(id):
             time.sleep(10)
 
     except:
-        print("Error, hører ikke etter")
+        print("Feil: mangler forbindelse til server")
 
 
 #"Main loop"------------------------------------------------------------------------------------------------------------
