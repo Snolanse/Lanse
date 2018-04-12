@@ -1,8 +1,12 @@
 # import RPi.GPIO as GPIO
 import pigpio
-import time
 
-pigpio.hardware_PWM(18, 800, 250000)
+def hpwm(freq,dcycle):
+    pi = pigpio.pi()
+    pi.hardware_PWM(18, freq, dcycle)
+
+# sudo pigpiod
+#
 
 '''
 GPIO.setwarnings(False)
