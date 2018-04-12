@@ -1,5 +1,6 @@
 import requests
 import json
+import time
 
 def serverCom(bronnid, get, sdata):
 
@@ -9,11 +10,13 @@ def serverCom(bronnid, get, sdata):
     client.get(url1)
     csrftoken = client.cookies['csrftoken']
 
-    l_data = dict(csrfmiddlewaretoken=csrftoken, bronnid=bronnid, get = get, next='/')
+    l_data = dict(csrfmiddlewaretoken=csrftoken, bronnid=bronnid, timestamp=time.time(), get = get, next='/')
     
     if len(sdata) != 0:
         for x in sdata:
             l_data[x] = sdata[x]
+
+
 
     r = client.post(url2, data=l_data, headers=dict(Referer=url2))
     return(json.loads(r.content.decode()))
