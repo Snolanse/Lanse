@@ -1,6 +1,10 @@
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
+import pigpio
 import time
 
+pigpio.hardware_PWM(18, 800, 250000)
+
+'''
 GPIO.setwarnings(False)
 
 PWM0 = 16
@@ -22,4 +26,6 @@ while 1:                               #execute loop forever
     for x in range (50):                         #execute loop for 50 times, x being incremented from 0 to 49.
         p.ChangeDutyCycle(50-x)        #change duty cycle for changing the brightness of LED.
         time.sleep(0.1)                          #sleep for 100m second
+'''
+
 
