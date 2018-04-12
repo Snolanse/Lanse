@@ -7,8 +7,9 @@ from tkinter import LEFT, TOP, X, FLAT, RAISED
 from threading import Thread
 from Modules import csrf
 
-if os == "posix" and platform.system() == "Linux":
+if os == "posix" and platform.system() == "Linux":  # Check system
     import adc as ADC
+    import pwm as PWM
     import RPi.GPIO as GPIO
     GPIO.setwarnings(False)
     rpi = 1
@@ -452,7 +453,12 @@ class MaalingPage(tk.Frame):  # Side for målinger
         tk.Frame.__init__(self, parent)
 
         defVal = "Udefinert"
-        # var2 = True
+        self.aktiveMaalinger = tk.Label(self, text="Aktive målinger")
+        self.typeMaaling = tk.Label(self, text="Type måling")
+        self.maaltVerdi = tk.Label(self, text="Målt verdi")
+        self.aktiveMaalinger.grid(row=0, column=0)
+        self.typeMaaling.grid(row=0, column=1)
+        self.maaltVerdi.grid(row=0, column=2)
 
         self.var = {}
         self.var2 = {}
@@ -464,15 +470,17 @@ class MaalingPage(tk.Frame):  # Side for målinger
             self.var3["variable{}".format(str(x))] = tk.StringVar()
             self.var3["variable{}".format(str(x))].set(defVal)
 
+
+
         for x in range(8):
             maalTyp = tk.OptionMenu(self, self.var["variable{}".format(str(x))],
                                      "Udefinert", "Vanntrykk", "Lufttrykk", "Vannstrøm", "Vanntemp")
-            maalTyp.grid(row=x, column=1)
+            maalTyp.grid(row=(x+1), column=1)
             c = tk.Checkbutton(self, text="Analog inngang {}".format(str(x)),
                                variable=self.var2["variable{}".format(str(x))])
-            c.grid(row=x, column=0)
+            c.grid(row=(x+1), column=0)
             labelq = tk.Label(self, textvariable=self.var3["variable{}".format(str(x))])
-            labelq.grid(row=x, column=2)
+            labelq.grid(row=(x+1), column=2)
             #  app.frames[MaalingPage].var3['variable7'].set('gg')
 
     #def contUpdate(self,value,attr,element):
@@ -485,6 +493,8 @@ class StyringPage(tk.Frame):  # Side for styring
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
+
+
 
 
 class Home(tk.Frame):  # Main page

@@ -6,7 +6,7 @@ def hpwm(freq,dcycle):
     pi.hardware_PWM(18, freq, dcycle)
 
 # sudo pigpiod
-#
+# the daemon cannot be killed
 
 '''
 GPIO.setwarnings(False)
