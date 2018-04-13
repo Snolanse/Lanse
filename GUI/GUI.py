@@ -182,6 +182,9 @@ class AppGui(tk.Tk):  # Main GUI class (Dette er controller)
         if rpi == 0:
             tk.Tk.iconbitmap(self, default="standard_trondheim.ico")  # Sets GUI icon if not on rpi
 
+        # self._geom="200x200+0+0"
+        self.geometry("{0}x{1}+0+0".format(self.winfo_screenwidth(), self.winfo_screenheight()))  # For fullscreen
+
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)  # Define window
         container.grid_rowconfigure(0, weight=1)
@@ -506,13 +509,13 @@ class Home(tk.Frame):  # Main page
         self.lanse_plassering = tk.StringVar()
         self.serverHent = tk.StringVar()
 
-        try:  # Testing
-            csrf.serverCom("bronn2", 0, {"vtrykk":4})  # Oppdatere informasjon på database
-            testData = csrf.serverCom("bronn2", 1, {})  # Hente informasjon fra database
-            print("Brønn 2 har lanse " + testData["lansetype"]["lansetype"])  # Debug
-            self.serverHent.set(testData["lansetype"]["lansetype"])  # Endre GUI basert på database
-        except:
-            print('Feil: mangler forbindelse til server (Home init)')
+        #try:  # Testing
+        #    csrf.serverCom("bronn2", 0, {"vtrykk":4})  # Oppdatere informasjon på database
+        #    testData = csrf.serverCom("bronn2", 1, {})  # Hente informasjon fra database
+        #    print("Brønn 2 har lanse " + testData["lansetype"]["lansetype"])  # Debug
+        #    self.serverHent.set(testData["lansetype"]["lansetype"])  # Endre GUI basert på database
+        #except:
+        #    print('Feil: mangler forbindelse til server (Home init)')
 
         with open(lanse_info, "r") as f:  # leser av lansetype
             s = f.read()
