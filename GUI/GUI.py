@@ -7,9 +7,11 @@ from tkinter import LEFT, TOP, X, FLAT, RAISED
 from threading import Thread
 from Modules import csrf
 
-if os == "posix" and platform.system() == "Linux":
+if os == "posix" and platform.system() == "Linux":  # Check system
     import adc as ADC
+    import pwm as PWM
     import RPi.GPIO as GPIO
+    GPIO.setwarnings(False)
     rpi = 1
 else:
     print("Feil: programmvare kjøres fra feil platform eller os")
@@ -19,8 +21,7 @@ else:
 
 lanse_type = None
 placement = None
-auto_man = 0
-lanse_steg = 0
+
 creds = 'tempfile.temp' # Variable that becomes login data document
 lanse_info = "lanse.temp"  # Lagret lansetype
 plass_info = "plass.temp"  # Lagret plassering
@@ -124,6 +125,54 @@ def FSSignup(cntrl, jump):  # Used to add a user to the GUI. So far only one use
             cntrl.show_frame(Home)
             print("Bruker registrert \n Brukernavn:", nameE, "\n Passord   :", pwordE)
 
+
+def midl():  # Kommunikasjonstest med server
+    try:
+        while True:
+
+            for i in range(8):
+                if app.frames[MaalingPage].var2['variable' + str(i)].get() == True:
+                    a = ADC.lesADC(i)
+                    app.frames[MaalingPage].var3['variable' + str(i)].set(a)
+                    #with open(analoge_maalinger, "r") as f:  # lagrer målinger
+                    #    f.write(str(a))
+                    #    f.close()
+                else:
+                    app.frames[MaalingPage].var3['variable' + str(i)].set("Ikke i bruk")
+
+            time.sleep(1)
+    except:
+        print("Feil: ADC crash")
+
+
+def serverLed(id):  # Kommunikasjonstest med server
+    try:
+        while True:
+            listen = csrf.serverCom(id, 1, {})
+            print(str(listen))
+
+            if listen["lanse"]["man_steg"] == 1:
+                GPIO.output(8, GPIO.HIGH)
+            else:
+                GPIO.output(8, GPIO.LOW)
+
+            time.sleep(10)
+
+    except:
+        print("Feil: mangler forbindelse til server")
+
+
+def serverLagre(placement):  # Funksjon som står for henting av informasjon fra server/database
+
+    hent = csrf.serverCom(("bronn" + str(placement)), 1, {})
+
+    for i in hent.keys():
+        print("Dict: " + i)
+        for j in hent[i]:
+            print("   " + j + ": " + str(hent[i][j]))
+
+    return hent
+
 # Classes---------------------------------------------------------------------------------------------------------------
 class AppGui(tk.Tk):  # Main GUI class (Dette er controller)
 
@@ -132,6 +181,9 @@ class AppGui(tk.Tk):  # Main GUI class (Dette er controller)
         tk.Tk.wm_title(self, "Snøstyring")  # Sets GUI title
         if rpi == 0:
             tk.Tk.iconbitmap(self, default="standard_trondheim.ico")  # Sets GUI icon if not on rpi
+
+        # self._geom="200x200+0+0"
+        self.geometry("{0}x{1}+0+0".format(self.winfo_screenwidth(), self.winfo_screenheight()))  # For fullscreen
 
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)  # Define window
@@ -152,12 +204,12 @@ class AppGui(tk.Tk):  # Main GUI class (Dette er controller)
         styringButton = tk.Button(toolbar, text="Styring", command=lambda: self.show_frame(StyringPage))
         styringButton.pack(side=LEFT, padx=2, pady=2)
 
-        toolbar.pack(side=TOP, fill=X)
+        toolbar.pack(side="bottom", fill=X)
 
         self.frames = {}
 
 
-        for F in (Home, SnTypePage2, PlacementPage, MaalingPage, StyringPage):  # Includes all pages, old:(Signup, Login, SnTypePage, ReLogin)
+        for F in (Home, SnTypePage2, PlacementPage, MaalingPage, StyringPage):  # Includes all pages, old:(Signup, Login, SnTypePage, ReLogin,)
 
             frame = F(container, self)
             self.frames[F] = frame
@@ -321,7 +373,7 @@ class PlacementPage(tk.Frame):  # This has to be cleaned up
         toolbar = tk.Frame(self, bg="grey")
 
         label = tk.Label(self, text="Hvor er lansa plassert?", font=LARGE_FONT)
-        label.pack(side=TOP)
+        label.pack(side="bottom")
 
         h=4
         w=8
@@ -395,7 +447,7 @@ class PlacementPage(tk.Frame):  # This has to be cleaned up
                              command=lambda: Place(27, controller),height = h, width = w)
         button19.grid(row=4,column=4)
 
-        toolbar.pack(side=LEFT)
+        toolbar.pack()
 
 
 class MaalingPage(tk.Frame):  # Side for målinger
@@ -404,7 +456,12 @@ class MaalingPage(tk.Frame):  # Side for målinger
         tk.Frame.__init__(self, parent)
 
         defVal = "Udefinert"
-        # var2 = True
+        self.aktiveMaalinger = tk.Label(self, text="Aktive målinger")
+        self.typeMaaling = tk.Label(self, text="Type måling")
+        self.maaltVerdi = tk.Label(self, text="Målt verdi")
+        self.aktiveMaalinger.grid(row=0, column=0)
+        self.typeMaaling.grid(row=0, column=1)
+        self.maaltVerdi.grid(row=0, column=2)
 
         self.var = {}
         self.var2 = {}
@@ -416,15 +473,17 @@ class MaalingPage(tk.Frame):  # Side for målinger
             self.var3["variable{}".format(str(x))] = tk.StringVar()
             self.var3["variable{}".format(str(x))].set(defVal)
 
+
+
         for x in range(8):
             maalTyp = tk.OptionMenu(self, self.var["variable{}".format(str(x))],
                                      "Udefinert", "Vanntrykk", "Lufttrykk", "Vannstrøm", "Vanntemp")
-            maalTyp.grid(row=x, column=1)
+            maalTyp.grid(row=(x+1), column=1)
             c = tk.Checkbutton(self, text="Analog inngang {}".format(str(x)),
                                variable=self.var2["variable{}".format(str(x))])
-            c.grid(row=x, column=0)
+            c.grid(row=(x+1), column=0)
             labelq = tk.Label(self, textvariable=self.var3["variable{}".format(str(x))])
-            labelq.grid(row=x, column=2)
+            labelq.grid(row=(x+1), column=2)
             #  app.frames[MaalingPage].var3['variable7'].set('gg')
 
     #def contUpdate(self,value,attr,element):
@@ -433,12 +492,12 @@ class MaalingPage(tk.Frame):  # Side for målinger
     #    contUpdate(self,value,attr,element)
 
 
-class StyringPage:  # Side for styring
+class StyringPage(tk.Frame):  # Side for styring
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
-        defVal = "Udefinert"
+
 
 
 class Home(tk.Frame):  # Main page
@@ -450,13 +509,13 @@ class Home(tk.Frame):  # Main page
         self.lanse_plassering = tk.StringVar()
         self.serverHent = tk.StringVar()
 
-        try:  # Testing
-            csrf.serverCom("bronn2", 0, {"vtrykk":4})  # Oppdatere informasjon på database
-            testData = csrf.serverCom("bronn2", 1, {})  # Hente informasjon fra database
-            print("Brønn 2 har lanse " + testData["lansetype"]["lansetype"])  # Debug
-            self.serverHent.set(testData["lansetype"]["lansetype"])  # Endre GUI basert på database
-        except:
-            print('Feil: mangler forbindelse til server')
+        #try:  # Testing
+        #    csrf.serverCom("bronn2", 0, {"vtrykk":4})  # Oppdatere informasjon på database
+        #    testData = csrf.serverCom("bronn2", 1, {})  # Hente informasjon fra database
+        #    print("Brønn 2 har lanse " + testData["lansetype"]["lansetype"])  # Debug
+        #    self.serverHent.set(testData["lansetype"]["lansetype"])  # Endre GUI basert på database
+        #except:
+        #    print('Feil: mangler forbindelse til server (Home init)')
 
         with open(lanse_info, "r") as f:  # leser av lansetype
             s = f.read()
@@ -483,41 +542,6 @@ class Home(tk.Frame):  # Main page
         label3 = tk.Label(self, textvariable=self.serverHent, font=LARGE_FONT)
         label3.grid(row=3)
 
-
-def midl():
-    try:
-        while True:
-
-            for i in range(8):
-                if app.frames[MaalingPage].var2['variable' + str(i)].get() == True:
-                    a = ADC.lesADC(i)
-                    app.frames[MaalingPage].var3['variable' + str(i)].set(a)
-                    #with open(analoge_maalinger, "r") as f:  # lagrer målinger
-                    #    f.write(str(a))
-                    #    f.close()
-                else:
-                    app.frames[MaalingPage].var3['variable' + str(i)].set("Ikke i bruk")
-
-            time.sleep(1)
-    except:
-        print("Feil: ADC crash")
-
-
-def serverLed(id):
-    try:
-        while True:
-            listen = csrf.serverCom(id, 1, {})
-            print(str(listen))
-
-            if listen["lanse"]["man_steg"] == 1:
-                GPIO.output(8, GPIO.HIGH)
-            else:
-                GPIO.output(8, GPIO.LOW)
-
-            time.sleep(10)
-
-    except:
-        print("Feil: mangler forbindelse til server")
 
 
 #"Main loop"------------------------------------------------------------------------------------------------------------
