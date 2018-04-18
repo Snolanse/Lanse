@@ -14,11 +14,8 @@ if os.name == "posix" and platform.system() == "Linux":  # Check system
     GPIO.setwarnings(False)
     rpi = 1
 
-    os.system("sudo pigpiod")
-
-    PWM.hpwm(500000,750000)
-
-
+    # os.system("sudo pigpiod")
+    # PWM.hpwm(500000,750000)
 else:
     print("Feil: programmvare kjøres fra feil platform eller os")
     rpi = 0
@@ -27,6 +24,8 @@ else:
 
 lanse_type = None
 placement = None
+
+serverDict = {}
 
 creds = 'tempfile.temp' # Variable that becomes login data document
 lanse_info = "lanse.temp"  # Lagret lansetype
@@ -79,10 +78,16 @@ def CheckReLogin(cntrl):  # Used to check if username and password is correct.
 def lanseType(Type, jump, cntrl):#Used to change value of global variable, and change GUI window
     global lanse_type
     lanse_type = Type
+    global placement
 
     with open(lanse_info, "w") as f:  # lagrer info til fil
         f.write(lanse_type)
         f.close()
+
+    if Type == "Viking V2":
+        csrf.serverSend("bronn" + str(placement), {'lanse_kategori':2})
+    elif Type == "Snokanon TG3":
+        csrf.serverSend("bronn" + str(placement), {'lanse_kategori':1})
 
     cntrl.frames[Home].lanse_Type.set("Type: " + str(lanse_type))
     if jump == 1:
@@ -132,7 +137,7 @@ def FSSignup(cntrl, jump):  # Used to add a user to the GUI. So far only one use
             print("Bruker registrert \n Brukernavn:", nameE, "\n Passord   :", pwordE)
 
 
-def midl():  # Kommunikasjonstest med server
+def adcRead():
     try:
         while True:
 
@@ -151,33 +156,24 @@ def midl():  # Kommunikasjonstest med server
         print("Feil: ADC crash")
 
 
-def serverLed(id):  # Kommunikasjonstest med server
-    try:
-        while True:
-            listen = csrf.serverCom(id, 1, {})
-            print(str(listen))
+def hentFraServer():  # Funksjon for henting fra server, for threading
 
-            if listen["lanse"]["man_steg"] == 1:
-                GPIO.output(8, GPIO.HIGH)
+    global serverDict
+    global placement
+
+    while True:
+        if placement == None:
+            print("Do nothing")
+        else:
+            serverDictBuffer = csrf.serverHent("bronn" + str(placement))
+            if serverDictBuffer == None:
+                print("Feil: Ugyldig serverdata")
             else:
-                GPIO.output(8, GPIO.LOW)
+                serverDict = serverDictBuffer
 
-            time.sleep(10)
+            print(serverDict)
+        time.sleep(10)
 
-    except:
-        print("Feil: mangler forbindelse til server")
-
-
-def serverLagre(placement):  # Funksjon som står for henting av informasjon fra server/database
-
-    hent = csrf.serverCom(("bronn" + str(placement)), 1, {})
-
-    for i in hent.keys():
-        print("Dict: " + i)
-        for j in hent[i]:
-            print("   " + j + ": " + str(hent[i][j]))
-
-    return hent
 
 # Classes---------------------------------------------------------------------------------------------------------------
 class AppGui(tk.Tk):  # Main GUI class (Dette er controller)
@@ -188,7 +184,7 @@ class AppGui(tk.Tk):  # Main GUI class (Dette er controller)
         # tk.Tk.iconbitmap(self, default="standard_trondheim.ico")
 
         # self._geom="200x200+0+0"
-        self.geometry("{0}x{1}+0+0".format((self.winfo_screenwidth() - 2), (self.winfo_screenheight() - 66)))  # For fullscreen
+        self.geometry("{0}x{1}+0+0".format((self.winfo_screenwidth() - 2), (self.winfo_screenheight() - 66)))  # For "fullscreen"
 
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)  # Define window
@@ -502,6 +498,11 @@ class StyringPage(tk.Frame):  # Side for styring
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
+        # Auto/man
+        # Auto styring kommer an på lansevalg
+        # Hvis man, hvilket steg?
+
+
 
 
 
@@ -512,6 +513,8 @@ class Home(tk.Frame):  # Main page
 
         self.lanse_Type = tk.StringVar()
         self.lanse_plassering = tk.StringVar()
+
+        '''
         self.serverHent = tk.StringVar()
 
         if rpi == 1:
@@ -522,6 +525,7 @@ class Home(tk.Frame):  # Main page
                 self.serverHent.set(testData["lansetype"]["lansetype"])  # Endre GUI basert på database
             except:
                 print('Feil: mangler forbindelse til server (Home init)')
+        '''
 
         with open(lanse_info, "r") as f:  # leser av lansetype
             s = f.read()
@@ -531,6 +535,8 @@ class Home(tk.Frame):  # Main page
                 self.lanse_Type.set("Type: " + 'Ikke definert')  # Udefinert dersom lanse.temp er tom
             else:
                 self.lanse_Type.set("Type: " + s)
+                global lanse_type
+                lanse_type = s
 
         with open(plass_info, "r") as f:  # leser av plassering
             s = f.read()
@@ -540,24 +546,29 @@ class Home(tk.Frame):  # Main page
                 self.lanse_plassering.set("Plassering: " + 'Ikke definert')  # Udefinert dersom plass.temp er tom
             else:
                 self.lanse_plassering.set("Plassering: " + s)
+                global placement
+                placement = s
 
         label = tk.Label(self, textvariable=self.lanse_Type, font=LARGE_FONT)
         label.grid(row=0)
         labe2 = tk.Label(self, textvariable=self.lanse_plassering, font=LARGE_FONT)
         labe2.grid(row=1)
+
+        '''
         label3 = tk.Label(self, textvariable=self.serverHent, font=LARGE_FONT)
         label3.grid(row=3)
-
+        '''
 
 
 #"Main loop"------------------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
 
+    tSH = Thread(target=hentFraServer, daemon=True)
+    tSH.start()
+
     app = AppGui()
 
-    t2= Thread(target=serverLed, args=("bronn2",), daemon=True)
-    t2.start()
-    t = Thread(target=midl, daemon=True)  # Lager en thread for en spesifikk oppgave
+    t = Thread(target=adcRead, daemon=True)  # Lager en thread for en spesifikk oppgave
     t.start()  # Starter threaden
 
     app.mainloop()
