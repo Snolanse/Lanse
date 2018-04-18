@@ -2,8 +2,8 @@ import requests
 import json
 import time
 
-global go
-go = 1
+global gyldigServerData
+gyldigServerData = 1
 
 def serverCom(bronnid, get, sdata):
 
@@ -25,15 +25,15 @@ def serverCom(bronnid, get, sdata):
     return(json.loads(r.content.decode()))
 
 def serverSend(bronnid, sdata):
-    global go
-    go = 0
+    global gyldigServerData
+    gyldigServerData = 0
     mdata = serverCom(bronnid,0,sdata)
     return mdata
 
 def serverhent(bronnid):
-    global go
-    go = 1
+    global gyldigServerData
+    gyldigServerData = 1
     mdata = serverCom(bronnid,1,{})
-    if go == 1:
+    if gyldigServerData == 1:
         global serverData
         serverData = mdata
