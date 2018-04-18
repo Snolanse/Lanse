@@ -35,5 +35,6 @@ def serverHent(bronnid):
     gyldigServerData = 1
     mdata = serverCom(bronnid,1,{})
     if gyldigServerData == 1:
-        global serverData
-        serverData = mdata
+        return mdata
+    else:
+        return None
