@@ -30,7 +30,7 @@ def serverSend(bronnid, sdata):
     mdata = serverCom(bronnid,0,sdata)
     return mdata
 
-def serverhent(bronnid):
+def serverHent(bronnid):
     global gyldigServerData
     gyldigServerData = 1
     mdata = serverCom(bronnid,1,{})
