@@ -7,12 +7,18 @@ from tkinter import LEFT, TOP, X, FLAT, RAISED
 from threading import Thread
 from Modules import csrf
 
-if os == "posix" and platform.system() == "Linux":  # Check system
+if os.name == "posix" and platform.system() == "Linux":  # Check system
     import adc as ADC
     import pwm as PWM
     import RPi.GPIO as GPIO
     GPIO.setwarnings(False)
     rpi = 1
+
+    os.system("sudo pigpiod")
+
+    PWM.hpwm(500000,750000)
+
+
 else:
     print("Feil: programmvare kjøres fra feil platform eller os")
     rpi = 0
@@ -179,11 +185,10 @@ class AppGui(tk.Tk):  # Main GUI class (Dette er controller)
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
         tk.Tk.wm_title(self, "Snøstyring")  # Sets GUI title
-        if rpi == 0:
-            tk.Tk.iconbitmap(self, default="standard_trondheim.ico")  # Sets GUI icon if not on rpi
+        # tk.Tk.iconbitmap(self, default="standard_trondheim.ico")
 
         # self._geom="200x200+0+0"
-        self.geometry("{0}x{1}+0+0".format(self.winfo_screenwidth(), self.winfo_screenheight()))  # For fullscreen
+        self.geometry("{0}x{1}+0+0".format((self.winfo_screenwidth() - 2), (self.winfo_screenheight() - 66)))  # For fullscreen
 
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)  # Define window
@@ -317,7 +322,7 @@ class SnTypePage2(tk.Frame): # Snowgun type page
         button0.grid(row=1, sticky="W")
 
         button1 = tk.Button(self, text="Snökanon TG3",
-                                command=lambda: lanseType("Snökanon TG3", 0, controller))
+                                command=lambda: lanseType("Snokanon TG3", 0, controller))
         button1.grid(row=2, sticky="W")
 
         button2 = tk.Button(self, text="Viking V2",
@@ -509,13 +514,14 @@ class Home(tk.Frame):  # Main page
         self.lanse_plassering = tk.StringVar()
         self.serverHent = tk.StringVar()
 
-        #try:  # Testing
-        #    csrf.serverCom("bronn2", 0, {"vtrykk":4})  # Oppdatere informasjon på database
-        #    testData = csrf.serverCom("bronn2", 1, {})  # Hente informasjon fra database
-        #    print("Brønn 2 har lanse " + testData["lansetype"]["lansetype"])  # Debug
-        #    self.serverHent.set(testData["lansetype"]["lansetype"])  # Endre GUI basert på database
-        #except:
-        #    print('Feil: mangler forbindelse til server (Home init)')
+        if rpi == 1:
+            try:  # Testing
+                csrf.serverCom("bronn2", 0, {"vtrykk":4})  # Oppdatere informasjon på database
+                testData = csrf.serverCom("bronn2", 1, {})  # Hente informasjon fra database
+                print("Brønn 2 har lanse " + testData["lansetype"]["lansetype"])  # Debug
+                self.serverHent.set(testData["lansetype"]["lansetype"])  # Endre GUI basert på database
+            except:
+                print('Feil: mangler forbindelse til server (Home init)')
 
         with open(lanse_info, "r") as f:  # leser av lansetype
             s = f.read()
