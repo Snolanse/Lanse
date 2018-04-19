@@ -13,7 +13,6 @@ if os.name == "posix" and platform.system() == "Linux":  # Check system
     import RPi.GPIO as GPIO
     GPIO.setwarnings(False)
     rpi = 1
-
     # os.system("sudo pigpiod")
     # PWM.hpwm(500000,750000)
 else:
@@ -24,6 +23,7 @@ else:
 
 lanse_type = None
 placement = None
+auto_man = None
 
 serverDict = {}
 
@@ -86,8 +86,12 @@ def lanseType(Type, jump, cntrl):#Used to change value of global variable, and c
 
     if Type == "Viking V2":
         csrf.serverSend("bronn" + str(placement), {'lanse_kategori':2})
+        global serverDict
+        serverDict['lanse_kategori'] = 2
     elif Type == "Snokanon TG3":
         csrf.serverSend("bronn" + str(placement), {'lanse_kategori':1})
+        # global serverDict
+        serverDict['lanse_kategori'] = 1
 
     cntrl.frames[Home].lanse_Type.set("Type: " + str(lanse_type))
     if jump == 1:
@@ -137,7 +141,8 @@ def FSSignup(cntrl, jump):  # Used to add a user to the GUI. So far only one use
             print("Bruker registrert \n Brukernavn:", nameE, "\n Passord   :", pwordE)
 
 
-def adcRead():
+# Analoge avlesninger
+def adcRead():  # Funksjon for avlesning av analoge innganger
     try:
         while True:
 
@@ -156,6 +161,15 @@ def adcRead():
         print("Feil: ADC crash")
 
 
+# Kommunikasjon med server
+def sendTilServer(data):  # Funksjon for sending av data til server
+    csrf.serverSend('bronn'+str(placement), data)
+
+    global serverDict
+    for x in data:
+        serverDict[x] = data[x]
+
+
 def hentFraServer():  # Funksjon for henting fra server, for threading
 
     global serverDict
@@ -170,13 +184,38 @@ def hentFraServer():  # Funksjon for henting fra server, for threading
                 print("Feil: Ugyldig serverdata")
             else:
                 serverDict = serverDictBuffer
+            # print(serverDict)
+        time.sleep(5)
 
-            print(serverDict)
-        time.sleep(10)
+
+def Viking_V3_styring():  # Utkast
+
+    wb = -4
+
+    # Sleng in kode for WB-utregning?
+
+    if auto_man == 0:  # Sjekk om den er i auto eller manuell
+        print("Stiller inn til ønsket manuelt steg")
+    elif auto_man == None:
+        print("Feil: Står verken i auto eller man")
+    else:
+        if serverDict["lanse"]["vindstyrke"] >= 10:  # Sjekk om det er for sterk vind
+            print("For sterk vind, stopp produksjon")
+            # Sjekke om det er en endelanse, hvis det er det: ikke stopp men laveste steg?
+        else:  # Styring i auto
+            if wb <= -7:
+                print("Perfekte forhold, høyeste steg")
+            elif wb > -7 and wb <= -5:
+                print("Greie forhold, middels steg")
+            elif wb > -5 and wb <= -3:
+                print("Dårlige forhold, laveste steg")
+            else:
+                print("Forferdelige forhold, stopper produksjon")
+                # Sjekke om det er en endelanse, hvis det er det: ikke stopp men laveste steg?
 
 
 # Classes---------------------------------------------------------------------------------------------------------------
-class AppGui(tk.Tk):  # Main GUI class (Dette er controller)
+class AppGui(tk.Tk):  # Main GUI class (Dette er tydeligvis controller)
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
@@ -184,7 +223,8 @@ class AppGui(tk.Tk):  # Main GUI class (Dette er controller)
         # tk.Tk.iconbitmap(self, default="standard_trondheim.ico")
 
         # self._geom="200x200+0+0"
-        self.geometry("{0}x{1}+0+0".format((self.winfo_screenwidth() - 2), (self.winfo_screenheight() - 66)))  # For "fullscreen"
+        if rpi == 1:
+            self.geometry("{0}x{1}+0+0".format((self.winfo_screenwidth() - 2), (self.winfo_screenheight() - 66)))  # For "fullscreen"
 
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)  # Define window
@@ -314,16 +354,17 @@ class SnTypePage2(tk.Frame): # Snowgun type page
         label.grid(sticky="N")
 
         button0 = tk.Button(self, text="Udefinert",
-                            command=lambda: lanseType("Udefinert", 0, controller))
+                            command=lambda:lanseType("Udefinert", 0, controller))
         button0.grid(row=1, sticky="W")
 
         button1 = tk.Button(self, text="Snökanon TG3",
-                                command=lambda: lanseType("Snokanon TG3", 0, controller))
+                                command=lambda:lanseType("Snokanon TG3", 0, controller))
         button1.grid(row=2, sticky="W")
 
         button2 = tk.Button(self, text="Viking V2",
                                 command=lambda: lanseType("Viking V2", 0, controller))
         button2.grid(row=3,sticky="W")
+
 
 '''
 class Signup(tk.Frame): # Signup page
@@ -499,11 +540,67 @@ class StyringPage(tk.Frame):  # Side for styring
         tk.Frame.__init__(self, parent)
 
         # Auto/man
+        autoButton = tk.Button(self, text="Auto", command=lambda: sendTilServer({'auto_man':1}))
+        autoButton.pack(side=TOP, padx=2, pady=2)
+        manButton = tk.Button(self, text="Man", command=lambda: sendTilServer({'auto_man':0}))
+        manButton.pack(side=TOP, padx=2, pady=2)
+
+        # For testing
+        byttButton = tk.Button(self, text="TG3", command=lambda: self.show_frame(tg3ManPage))
+        byttButton.pack(side="bottom", padx=2, pady=2)
+        battButton = tk.Button(self, text="VIKING", command=lambda: self.show_frame(vikingManPage))
+        battButton.pack(side="bottom", padx=2, pady=2)
+
         # Auto styring kommer an på lansevalg
+
+        container = tk.Frame(self)
+        container.pack(side="bottom", fill="both", expand=True)  # Define window
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
+
+
+        self.frames = {}
+
+        for F in (tg3ManPage, vikingManPage, Home):  # Home er her kun for debug
+
+            frame = F(container, self)
+            self.frames[F] = frame
+            frame.grid(row=0, column=0, sticky="nsew")
+
+        # StyringPage.show_frame(self, vikingManPage)  # Starting page
+        self.show_frame(vikingManPage)
+
+
+    def show_frame(self, cont):
+        frame = self.frames[cont]
+        frame.tkraise()
+
         # Hvis man, hvilket steg?
 
 
+class vikingManPage(tk.Frame):  # Side for styring
 
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+
+        steg0Button = tk.Button(self, text="Steg 0", command=lambda: sendTilServer({'man_steg':0}))
+        steg0Button.grid(row=0, column=0, pady=2)
+        steg1Button = tk.Button(self, text="Steg 1", command=lambda: sendTilServer({'man_steg':1}))
+        steg1Button.grid(row=1, column=0, pady=2)
+        steg2Button = tk.Button(self, text="Steg 2", command=lambda: sendTilServer({'man_steg':2}))
+        steg2Button.grid(row=2, column=0, pady=2)
+        steg3Button = tk.Button(self, text="Steg 3", command=lambda: sendTilServer({'man_steg':3}))
+        steg3Button.grid(row=3, column=0, pady=2)
+
+
+class tg3ManPage(tk.Frame):  # Side for styring
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        avButton = tk.Button(self, text="Av", command=lambda: sendTilServer({'man_steg':0}))
+        avButton.pack(side=LEFT, padx=2, pady=2)
+        paaButton = tk.Button(self, text="På", command=lambda: sendTilServer({'man_steg':1}))
+        paaButton.pack(side=LEFT, padx=2, pady=2)
 
 
 class Home(tk.Frame):  # Main page
