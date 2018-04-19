@@ -5,7 +5,7 @@ import time
 import tkinter as tk
 from tkinter import LEFT, TOP, X, FLAT, RAISED
 from threading import Thread
-from Modules import csrf
+from Modules import csrf, funksjoner
 
 if os.name == "posix" and platform.system() == "Linux":  # Check system
     import adc as ADC
@@ -192,7 +192,7 @@ def Viking_V3_styring():  # Utkast
 
     wb = -4
 
-    # Sleng in kode for WB-utregning?
+    # Sleng in kode for WB-utregning? #fiksa, ligger nå lenger nede
 
     if auto_man == 0:  # Sjekk om den er i auto eller manuell
         print("Stiller inn til ønsket manuelt steg")
@@ -203,6 +203,7 @@ def Viking_V3_styring():  # Utkast
             print("For sterk vind, stopp produksjon")
             # Sjekke om det er en endelanse, hvis det er det: ikke stopp men laveste steg?
         else:  # Styring i auto
+            wb = funksjoner.wetBulbMedAtmTrykk(serverDict["verstasjon']['hum'],serverDict['verstasjon']['temp_2'],serverDict['verstasjon']['press'])
             if wb <= -7:
                 print("Perfekte forhold, høyeste steg")
             elif wb > -7 and wb <= -5:
@@ -212,6 +213,10 @@ def Viking_V3_styring():  # Utkast
             else:
                 print("Forferdelige forhold, stopper produksjon")
                 # Sjekke om det er en endelanse, hvis det er det: ikke stopp men laveste steg?
+                if serverDict['lanse']['plassering_bronn'] == 19 or serverDict['lanse']['plassering_bronn'] == 27:
+                    print('setter i laveste steg pga endelanse')
+                else:
+                    print('avslutter produksjon')
 
 
 # Classes---------------------------------------------------------------------------------------------------------------
