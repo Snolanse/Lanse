@@ -189,9 +189,11 @@ def hentFraServer():  # Funksjon for henting fra server, for threading
         time.sleep(5)
 
 
-def Viking_V3_styring():  # Utkast
+def Viking_V3_styring():  # Utkast  #fremdeles utkast
 
     wb = -4
+    if len(serverDict) == 0:                                    ###MIDLERTIDIG FIX (håper jeg, vi trenger en form for datahåndtering)
+        raise ValueError('har ikke henta data fra server ')
 
     # Sleng in kode for WB-utregning? #fiksa, ligger nå lenger nede
 
@@ -219,6 +221,8 @@ def Viking_V3_styring():  # Utkast
             # Sjekke om det er en endelanse, hvis det er det: ikke stopp men laveste steg?
             if serverDict['lanse']['plassering_bronn'] == 19 or serverDict['lanse']['plassering_bronn'] == 27:
                  print('setter i laveste steg pga endelanse')
+                 blinky.on_off(0,blinky.Steg1)
+                 blinky.on_off(0,blinky.Steg2)
             else:
                 print('avslutter produksjon pga vind')
                 blinky.on_off(0,blinky.Steg1)
@@ -228,17 +232,31 @@ def Viking_V3_styring():  # Utkast
             wb = funksjoner.wetBulbMedAtmTrykk(serverDict['verstasjon']['hum'],serverDict['verstasjon']['temp_2'],serverDict['verstasjon']['press'])
             if wb <= -7:
                 print("Perfekte forhold, høyeste steg")
+                blinky.startVann()
+                blinky.on_off(1,blinky.Steg1)
+                blinky.on_off(1,blinky.Steg2)
             elif wb > -7 and wb <= -5:
-                print("Greie forhold, middels steg")
+                print("Greie forhold, middels steg") #hva er middels steg?
+                blinky.startVann()
+                blinky.on_off(1,blinky.Steg1)
+                blinky.on_off(0,blinky.Steg2)
             elif wb > -5 and wb <= -3:
                 print("Dårlige forhold, laveste steg")
+                blinky.startVann()
+                blinky.on_off(0,blinky.Steg1)
+                blinky.on_off(0,blinky.Steg2)
             else:
                 print("Forferdelige forhold, stopper produksjon")
                 # Sjekke om det er en endelanse, hvis det er det: ikke stopp men laveste steg?
                 if serverDict['lanse']['plassering_bronn'] == 19 or serverDict['lanse']['plassering_bronn'] == 27:
                     print('setter i laveste steg pga endelanse')
+                    blinky.on_off(0,blinky.Steg1)
+                    blinky.on_off(0,blinky.Steg2)
                 else:
                     print('avslutter produksjon')
+                    blinky.on_off(0,blinky.Steg1)
+                    blinky.on_off(0,blinky.Steg2)
+                    blinky.stengVann()
 
 
 # Classes---------------------------------------------------------------------------------------------------------------
@@ -694,6 +712,10 @@ if __name__ == "__main__":
 
     t = Thread(target=adcRead, daemon=True)  # Lager en thread for en spesifikk oppgave
     t.start()  # Starter threaden
+
+    if rpi == 1:
+        tREG = Thread(target=Viking_V3_styring, daemon=True)
+        tREG.start()
 
     app.mainloop()
 
