@@ -1,4 +1,4 @@
-import numpy
+import numpy as np
 
 def wetBulbMedAtmTrykk(luftfukt,temperatur,lufttrykk):    #rekner ut wetbulb temperatur med atmosfæretrykk
     rh = luftfukt
