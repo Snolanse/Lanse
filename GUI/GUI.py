@@ -217,7 +217,7 @@ def Viking_V3_styring():  # Utkast  #fremdeles utkast
             elif serverDict["lanse"]['auto_man'] == None:
                 print("Feil: Står verken i auto eller man")
             else:
-                if serverDict["lanse"]["vindstyrke"] >= 10:  # Sjekk om det er for sterk vind
+                if serverDict["verstasjon"]["vind"] >= 10:  # Sjekk om det er for sterk vind
                     print("For sterk vind, stopp produksjon")
                     # Sjekke om det er en endelanse, hvis det er det: ikke stopp men laveste steg?
                     if serverDict['lanse']['plassering_bronn'] == 19 or serverDict['lanse']['plassering_bronn'] == 27:
