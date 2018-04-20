@@ -203,11 +203,11 @@ def Viking_V3_styring():  # Utkast
             print("For sterk vind, stopp produksjon")
             # Sjekke om det er en endelanse, hvis det er det: ikke stopp men laveste steg?
             if serverDict['lanse']['plassering_bronn'] == 19 or serverDict['lanse']['plassering_bronn'] == 27:
-                    print('setter i laveste steg pga endelanse')
-                else:
-                    print('avslutter produksjon pga vind')
+                 print('setter i laveste steg pga endelanse')
+            else:
+                print('avslutter produksjon pga vind')
         else:  # Styring i auto
-            wb = funksjoner.wetBulbMedAtmTrykk(serverDict["verstasjon']['hum'],serverDict['verstasjon']['temp_2'],serverDict['verstasjon']['press'])
+            wb = funksjoner.wetBulbMedAtmTrykk(serverDict['verstasjon']['hum'],serverDict['verstasjon']['temp_2'],serverDict['verstasjon']['press'])
             if wb <= -7:
                 print("Perfekte forhold, høyeste steg")
             elif wb > -7 and wb <= -5:
