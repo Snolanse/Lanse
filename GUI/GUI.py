@@ -260,7 +260,7 @@ def Viking_V3_styring():  # Utkast  #fremdeles utkast
         time.sleep(1)
 
     except reguleringsException:
-        Print('venter på data')
+        print('venter på data')
         time.sleep(2)
 
 
