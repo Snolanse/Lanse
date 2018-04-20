@@ -186,7 +186,7 @@ def hentFraServer():  # Funksjon for henting fra server, for threading
             else:
                 serverDict = serverDictBuffer
             # print(serverDict)
-        time.sleep(5)
+        time.sleep(4)
 
 
 def Viking_V3_styring():  # Utkast  #fremdeles utkast
@@ -201,6 +201,8 @@ def Viking_V3_styring():  # Utkast  #fremdeles utkast
             if serverDict["lanse"]['auto_man'] == 0:  # Sjekk om den er i auto eller manuell
                 print("Stiller inn til ønsket manuelt steg")
                 if serverDict["lanse"]['man_steg'] == 0:
+                    blinky.on_off(0,blinky.Steg1)
+                    blinky.on_off(0,blinky.Steg2)
                     blinky.stengVann()
                 else:
                     blinky.startVann()
