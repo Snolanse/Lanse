@@ -12,6 +12,7 @@ if os.name == "posix" and platform.system() == "Linux":  # Check system
     from Modules import pwm as PWM
     import RPi.GPIO as GPIO
     GPIO.setwarnings(False)
+    from Modules import blinky
     rpi = 1
     # os.system("sudo pigpiod")
     # PWM.hpwm(500000,750000)
@@ -194,9 +195,23 @@ def Viking_V3_styring():  # Utkast
 
     # Sleng in kode for WB-utregning? #fiksa, ligger nå lenger nede
 
-    if auto_man == 0:  # Sjekk om den er i auto eller manuell
+    if serverDict["lanse"]['auto_man'] == 0:  # Sjekk om den er i auto eller manuell
         print("Stiller inn til ønsket manuelt steg")
-    elif auto_man == None:
+        if serverDict["lanse"]['man_steg'] == 0:
+            blinky.stengVann()
+        else:
+            blinky.startVann()
+            if serverDict["lanse"]['man_steg'] == 2:
+                blinky.on_off(1,blinky.Steg1)
+                blinky.on_off(0,blinky.Steg2)
+            elif serverDict["lanse"]['man_steg'] == 3:
+                blinky.on_off(0,blinky.Steg1)
+                blinky.on_off(1,blinky.Steg2)
+            elif serverDict["lanse"]['man_steg'] == 4:
+                blinky.on_off(1,blinky.Steg1)
+                blinky.on_off(1,blinky.Steg2)
+        
+    elif serverDict["lanse"]['auto_man'] == None:
         print("Feil: Står verken i auto eller man")
     else:
         if serverDict["lanse"]["vindstyrke"] >= 10:  # Sjekk om det er for sterk vind
@@ -206,6 +221,9 @@ def Viking_V3_styring():  # Utkast
                  print('setter i laveste steg pga endelanse')
             else:
                 print('avslutter produksjon pga vind')
+                blinky.on_off(0,blinky.Steg1)
+                blinky.on_off(0,blinky.Steg2)
+                blinky.stengVann()
         else:  # Styring i auto
             wb = funksjoner.wetBulbMedAtmTrykk(serverDict['verstasjon']['hum'],serverDict['verstasjon']['temp_2'],serverDict['verstasjon']['press'])
             if wb <= -7:
