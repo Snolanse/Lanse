@@ -5,10 +5,10 @@ import time
 global gyldigServerData
 gyldigServerData = 1
 
-def serverCom(bronnid, get, sdata):
+def serverCom(bronnid, get, sdata):     #grunnoppsett for kommunikasjon med serveren
 
     url1 = "http://192.168.0.101:8000/csrf"
-    url2 = "http://192.168.0.101:8000/test"
+    url2 = "http://192.168.0.101:8000/data"
     client = requests.session()
     client.get(url1)
     csrftoken = client.cookies['csrftoken']
@@ -24,13 +24,13 @@ def serverCom(bronnid, get, sdata):
     r = client.post(url2, data=l_data, headers=dict(Referer=url2))
     return(json.loads(r.content.decode()))
 
-def serverSend(bronnid, sdata):
+def serverSend(bronnid, sdata):     #forenklet funksjon for å sende data
     global gyldigServerData
     gyldigServerData = 0
     mdata = serverCom(bronnid,0,sdata)
     return mdata
 
-def serverHent(bronnid):
+def serverHent(bronnid):        #forenklet funksjon for å hente data
     global gyldigServerData
     gyldigServerData = 1
     mdata = serverCom(bronnid,1,{})

@@ -16,7 +16,7 @@ if os.name == "posix" and platform.system() == "Linux":  # Check system
     # os.system("sudo pigpiod")
     # PWM.hpwm(500000,750000)
 else:
-    print("Feil: programmvare kjøres fra feil platform eller os")
+    print("Feil: programvare kjøres fra feil platform eller os")
     rpi = 0
 
 # Global variables------------------------------------------------------------------------------------------------------
