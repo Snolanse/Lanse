@@ -190,78 +190,79 @@ def hentFraServer():  # Funksjon for henting fra server, for threading
 
 
 def Viking_V3_styring():  # Utkast  #fremdeles utkast
-    try:
-        wb = -4
-        if len(serverDict) == 0:                                    ###MIDLERTIDIG FIX (håper jeg, vi trenger en form for datahåndtering)
-            raise reguleringsException('har ikke henta data fra server ')
+    while True:
+        try:
+            wb = -4
+            if len(serverDict) == 0:                                    ###MIDLERTIDIG FIX (håper jeg, vi trenger en form for datahåndtering)
+                raise reguleringsException('har ikke henta data fra server ')
 
-        # Sleng in kode for WB-utregning? #fiksa, ligger nå lenger nede
+            # Sleng in kode for WB-utregning? #fiksa, ligger nå lenger nede
 
-        if serverDict["lanse"]['auto_man'] == 0:  # Sjekk om den er i auto eller manuell
-            print("Stiller inn til ønsket manuelt steg")
-            if serverDict["lanse"]['man_steg'] == 0:
-                blinky.stengVann()
-            else:
-                blinky.startVann()
-                if serverDict["lanse"]['man_steg'] == 2:
-                    blinky.on_off(1,blinky.Steg1)
-                    blinky.on_off(0,blinky.Steg2)
-                elif serverDict["lanse"]['man_steg'] == 3:
-                    blinky.on_off(0,blinky.Steg1)
-                    blinky.on_off(1,blinky.Steg2)
-                elif serverDict["lanse"]['man_steg'] == 4:
-                    blinky.on_off(1,blinky.Steg1)
-                    blinky.on_off(1,blinky.Steg2)
-        
-        elif serverDict["lanse"]['auto_man'] == None:
-            print("Feil: Står verken i auto eller man")
-        else:
-            if serverDict["lanse"]["vindstyrke"] >= 10:  # Sjekk om det er for sterk vind
-                print("For sterk vind, stopp produksjon")
-                # Sjekke om det er en endelanse, hvis det er det: ikke stopp men laveste steg?
-                if serverDict['lanse']['plassering_bronn'] == 19 or serverDict['lanse']['plassering_bronn'] == 27:
-                     print('setter i laveste steg pga endelanse')
-                     blinky.on_off(0,blinky.Steg1)
-                     blinky.on_off(0,blinky.Steg2)
-                else:
-                    print('avslutter produksjon pga vind')
-                    blinky.on_off(0,blinky.Steg1)
-                    blinky.on_off(0,blinky.Steg2)
+            if serverDict["lanse"]['auto_man'] == 0:  # Sjekk om den er i auto eller manuell
+                print("Stiller inn til ønsket manuelt steg")
+                if serverDict["lanse"]['man_steg'] == 0:
                     blinky.stengVann()
-            else:  # Styring i auto
-                wb = funksjoner.wetBulbMedAtmTrykk(serverDict['verstasjon']['hum'],serverDict['verstasjon']['temp_2'],serverDict['verstasjon']['press'])
-                if wb <= -7:
-                    print("Perfekte forhold, høyeste steg")
-                    blinky.startVann()
-                    blinky.on_off(1,blinky.Steg1)
-                    blinky.on_off(1,blinky.Steg2)
-                elif wb > -7 and wb <= -5:
-                    print("Greie forhold, middels steg") #hva er middels steg?
-                    blinky.startVann()
-                    blinky.on_off(1,blinky.Steg1)
-                    blinky.on_off(0,blinky.Steg2)
-                elif wb > -5 and wb <= -3:
-                    print("Dårlige forhold, laveste steg")
-                    blinky.startVann()
-                    blinky.on_off(0,blinky.Steg1)
-                    blinky.on_off(0,blinky.Steg2)
                 else:
-                    print("Forferdelige forhold, stopper produksjon")
+                    blinky.startVann()
+                    if serverDict["lanse"]['man_steg'] == 2:
+                        blinky.on_off(1,blinky.Steg1)
+                        blinky.on_off(0,blinky.Steg2)
+                    elif serverDict["lanse"]['man_steg'] == 3:
+                        blinky.on_off(0,blinky.Steg1)
+                        blinky.on_off(1,blinky.Steg2)
+                    elif serverDict["lanse"]['man_steg'] == 4:
+                        blinky.on_off(1,blinky.Steg1)
+                        blinky.on_off(1,blinky.Steg2)
+        
+            elif serverDict["lanse"]['auto_man'] == None:
+                print("Feil: Står verken i auto eller man")
+            else:
+                if serverDict["lanse"]["vindstyrke"] >= 10:  # Sjekk om det er for sterk vind
+                    print("For sterk vind, stopp produksjon")
                     # Sjekke om det er en endelanse, hvis det er det: ikke stopp men laveste steg?
                     if serverDict['lanse']['plassering_bronn'] == 19 or serverDict['lanse']['plassering_bronn'] == 27:
-                        print('setter i laveste steg pga endelanse')
-                        blinky.on_off(0,blinky.Steg1)
-                        blinky.on_off(0,blinky.Steg2)
+                         print('setter i laveste steg pga endelanse')
+                         blinky.on_off(0,blinky.Steg1)
+                         blinky.on_off(0,blinky.Steg2)
                     else:
-                        print('avslutter produksjon')
+                        print('avslutter produksjon pga vind')
                         blinky.on_off(0,blinky.Steg1)
                         blinky.on_off(0,blinky.Steg2)
                         blinky.stengVann()
-        time.sleep(1)
+                else:  # Styring i auto
+                    wb = funksjoner.wetBulbMedAtmTrykk(serverDict['verstasjon']['hum'],serverDict['verstasjon']['temp_2'],serverDict['verstasjon']['press'])
+                    if wb <= -7:
+                        print("Perfekte forhold, høyeste steg")
+                        blinky.startVann()
+                        blinky.on_off(1,blinky.Steg1)
+                        blinky.on_off(1,blinky.Steg2)
+                    elif wb > -7 and wb <= -5:
+                        print("Greie forhold, middels steg") #hva er middels steg?
+                        blinky.startVann()
+                        blinky.on_off(1,blinky.Steg1)
+                        blinky.on_off(0,blinky.Steg2)
+                    elif wb > -5 and wb <= -3:
+                        print("Dårlige forhold, laveste steg")
+                        blinky.startVann()
+                        blinky.on_off(0,blinky.Steg1)
+                        blinky.on_off(0,blinky.Steg2)
+                    else:
+                        print("Forferdelige forhold, stopper produksjon")
+                        # Sjekke om det er en endelanse, hvis det er det: ikke stopp men laveste steg?
+                        if serverDict['lanse']['plassering_bronn'] == 19 or serverDict['lanse']['plassering_bronn'] == 27:
+                            print('setter i laveste steg pga endelanse')
+                            blinky.on_off(0,blinky.Steg1)
+                            blinky.on_off(0,blinky.Steg2)
+                        else:
+                            print('avslutter produksjon')
+                            blinky.on_off(0,blinky.Steg1)
+                            blinky.on_off(0,blinky.Steg2)
+                            blinky.stengVann()
+            time.sleep(1)
 
-    except reguleringsException:
-        print('venter på data')
-        time.sleep(2)
+        except reguleringsException:
+            print('venter på data')
+            time.sleep(2)
 
 
 # Exeption Classes------------------------------------------------------------------------------------------------------
