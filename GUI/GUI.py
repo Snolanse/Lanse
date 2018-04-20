@@ -8,8 +8,8 @@ from threading import Thread
 from Modules import csrf, funksjoner
 
 if os.name == "posix" and platform.system() == "Linux":  # Check system
-    import adc as ADC
-    import pwm as PWM
+    from Modules import adc as ADC
+    from Modules import pwm as PWM
     import RPi.GPIO as GPIO
     GPIO.setwarnings(False)
     rpi = 1
