@@ -86,13 +86,13 @@ def lanseType(Type, jump, cntrl):#Used to change value of global variable, and c
         f.close()
 
     if Type == "Viking V2":
-        csrf.serverSend("bronn" + str(placement), {'lanse_kategori':2})
+        csrf.serverSend("bronn" + str(placement), {'lanse_kategori':'VikingV2'})
         global serverDict
-        serverDict['lanse_kategori'] = 2
+        serverDict['lanse_kategori'] = 'VikingV2'
     elif Type == "Snokanon TG3":
-        csrf.serverSend("bronn" + str(placement), {'lanse_kategori':1})
+        csrf.serverSend("bronn" + str(placement), {'lanse_kategori':'TG3'})
         # global serverDict
-        serverDict['lanse_kategori'] = 1
+        serverDict['lanse_kategori'] = 'TG3'
 
     cntrl.frames[Home].lanse_Type.set("Type: " + str(lanse_type))
     if jump == 1:
@@ -200,19 +200,19 @@ def Viking_V3_styring():  # Utkast  #fremdeles utkast
 
             if serverDict["lanse"]['auto_man'] == 0:  # Sjekk om den er i auto eller manuell
                 print("Stiller inn til ønsket manuelt steg")
-                if serverDict["lanse"]['man_steg'] == 0:
+                if serverDict["lanse"]['modus'] == 0:
                     blinky.on_off(0,blinky.Steg1)
                     blinky.on_off(0,blinky.Steg2)
                     blinky.stengVann()
                 else:
                     blinky.startVann()
-                    if serverDict["lanse"]['man_steg'] == 2:
+                    if serverDict["lanse"]['modus'] == 2:
                         blinky.on_off(1,blinky.Steg1)
                         blinky.on_off(0,blinky.Steg2)
-                    elif serverDict["lanse"]['man_steg'] == 3:
+                    elif serverDict["lanse"]['modus'] == 3:
                         blinky.on_off(0,blinky.Steg1)
                         blinky.on_off(1,blinky.Steg2)
-                    elif serverDict["lanse"]['man_steg'] == 4:
+                    elif serverDict["lanse"]['modus'] == 4:
                         blinky.on_off(1,blinky.Steg1)
                         blinky.on_off(1,blinky.Steg2)
         
