@@ -14,8 +14,8 @@
       <file leaf-file-name="GUI.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/GUI.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="808">
-              <caret line="152" column="102" lean-forward="true" selection-start-line="152" selection-start-column="102" selection-end-line="152" selection-end-column="102" />
+            <state relative-caret-position="1270">
+              <caret line="166" column="79" lean-forward="true" selection-start-line="166" selection-start-column="79" selection-end-line="166" selection-end-column="79" />
               <folding>
                 <element signature="e#7937#8056#0" expanded="false" />
                 <element signature="e#8092#8238#0" expanded="false" />
@@ -324,8 +324,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/GUI.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="808">
-          <caret line="152" column="102" lean-forward="true" selection-start-line="152" selection-start-column="102" selection-end-line="152" selection-end-column="102" />
+        <state relative-caret-position="1270">
+          <caret line="166" column="79" lean-forward="true" selection-start-line="166" selection-start-column="79" selection-end-line="166" selection-end-column="79" />
           <folding>
             <element signature="e#7937#8056#0" expanded="false" />
             <element signature="e#8092#8238#0" expanded="false" />
