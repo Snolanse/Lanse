@@ -179,11 +179,14 @@ def adcRead():  # Funksjon for avlesning av analoge innganger
 
 # Kommunikasjon med server
 def sendTilServer(data):  # Funksjon for sending av data til server
-    csrf.serverSend('bronn'+str(placement), data)
 
     global serverDict
     for x in data:
         serverDict[x] = data[x]
+
+    csrf.serverSend('bronn'+str(placement), data)
+
+
 
 
 def sendTilServerThreaded():
@@ -667,6 +670,8 @@ class vikingManPage(tk.Frame):  # Side for styring
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
+
+        global serverDict
 
         steg0Button = tk.Button(self, text="Steg 0", command=lambda: sendTilServer({'modus':0}))
         steg0Button.grid(row=0, column=0, pady=2)
