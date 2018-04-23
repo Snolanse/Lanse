@@ -668,23 +668,25 @@ class vikingManPage(tk.Frame):  # Side for styring
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
-        steg0Button = tk.Button(self, text="Steg 0", command=lambda: sendTilServer({'man_steg':0}))
+        steg0Button = tk.Button(self, text="Steg 0", command=lambda: sendTilServer({'modus':0}))
         steg0Button.grid(row=0, column=0, pady=2)
-        steg1Button = tk.Button(self, text="Steg 1", command=lambda: sendTilServer({'man_steg':1}))
+        steg1Button = tk.Button(self, text="Steg 1", command=lambda: sendTilServer({'modus':1}))
         steg1Button.grid(row=1, column=0, pady=2)
-        steg2Button = tk.Button(self, text="Steg 2", command=lambda: sendTilServer({'man_steg':2}))
+        steg2Button = tk.Button(self, text="Steg 2", command=lambda: sendTilServer({'modus':2}))
         steg2Button.grid(row=2, column=0, pady=2)
-        steg3Button = tk.Button(self, text="Steg 3", command=lambda: sendTilServer({'man_steg':3}))
+        steg3Button = tk.Button(self, text="Steg 3", command=lambda: sendTilServer({'modus':3}))
         steg3Button.grid(row=3, column=0, pady=2)
+        steg4Button = tk.Button(self, text="Steg 4", command=lambda: sendTilServer({'modus':4}))
+        steg4Button.grid(row=4, column=0, pady=2)
 
 
 class tg3ManPage(tk.Frame):  # Side for styring
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        avButton = tk.Button(self, text="Av", command=lambda: sendTilServer({'man_steg':0}))
+        avButton = tk.Button(self, text="Av", command=lambda: sendTilServer({'modus':0}))
         avButton.pack(side=LEFT, padx=2, pady=2)
-        paaButton = tk.Button(self, text="På", command=lambda: sendTilServer({'man_steg':1}))
+        paaButton = tk.Button(self, text="På", command=lambda: sendTilServer({'modus':1}))
         paaButton.pack(side=LEFT, padx=2, pady=2)
 
 
