@@ -27,6 +27,7 @@ placement = None
 auto_man = None
 
 serverDict = {}
+sendDict = {}
 
 creds = 'tempfile.temp' # Variable that becomes login data document
 lanse_info = "lanse.temp"  # Lagret lansetype
@@ -139,12 +140,17 @@ def FSSignup(cntrl, jump):  # Used to add a user to the GUI. So far only one use
 # Analoge avlesninger
 def adcRead():  # Funksjon for avlesning av analoge innganger
     try:
+        global sendDict
         while True:
 
             for i in range(4):
                 if app.frames[MaalingPage].var2['variable' + str(i)].get() == True:
                     a = ADC.lesADC(i)
                     app.frames[MaalingPage].var3['variable' + str(i)].set(a)
+                    if app.frames[MaalingPage].var["variable" + str(i)] == "Vanntrykk":
+                        vanntrykk = (50/1023)* a
+                        app.frames[MaalingPage].var3['variable' + str(i)].set(str(vanntrykk) + ' Bar')
+                        sendDict['vanntrykk'] = vanntrykk
                     #with open(analoge_maalinger, "r") as f:  # lagrer målinger
                     #    f.write(str(a))
                     #    f.close()
@@ -163,6 +169,14 @@ def sendTilServer(data):  # Funksjon for sending av data til server
     global serverDict
     for x in data:
         serverDict[x] = data[x]
+
+def sendTilServerThreaded():
+    global sendDict
+    while True:
+        if len(sendDict) > 0:
+            sendTilServer(sendDict)
+            sendDict = {}
+        time.sleep(10)
 
 
 def hentFraServer():  # Funksjon for henting fra server, for threading
@@ -726,6 +740,9 @@ if __name__ == "__main__":
     if rpi == 1:
         tREG = Thread(target=Viking_V3_styring, daemon=True)
         tREG.start()
+
+        tSDS = Thread(target=sendTilServerThreaded, daemon=True)
+        tSDS.start()
 
     app.mainloop()
 
