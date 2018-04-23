@@ -15,6 +15,5 @@ SPI_DEVICE = 0
 mcp = MCP3008(spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE))
 
 def lesADC(channel):
-    # do shit
     verdi = mcp.read_adc(channel)
     return verdi

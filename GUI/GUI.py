@@ -34,12 +34,6 @@ plass_info = "plass.temp"  # Lagret plassering
 analoge_maalinger = "maal.temp"
 LARGE_FONT = ("Verdana", 12)# Font type og størrelse
 
-if rpi == 1:
-    GPIO.setmode(GPIO.BOARD)       # Numbers GPIOs by physical location
-    GPIO.setup(8, GPIO.OUT)
-    GPIO.setup(10, GPIO.OUT)
-    GPIO.output(8, GPIO.LOW)
-    GPIO.output(10, GPIO.LOW)
 
 
 # Functions ------------------------------------------------------------------------------------------------------------
@@ -147,7 +141,7 @@ def adcRead():  # Funksjon for avlesning av analoge innganger
     try:
         while True:
 
-            for i in range(8):
+            for i in range(4):
                 if app.frames[MaalingPage].var2['variable' + str(i)].get() == True:
                     a = ADC.lesADC(i)
                     app.frames[MaalingPage].var3['variable' + str(i)].set(a)
@@ -569,7 +563,7 @@ class MaalingPage(tk.Frame):  # Side for målinger
         self.var = {}
         self.var2 = {}
         self.var3 = {}
-        for x in range(8):
+        for x in range(4):
             self.var["variable{}".format(str(x))] = tk.StringVar()
             self.var["variable{}".format(str(x))].set(defVal)
             self.var2["variable{}".format(str(x))] = tk.BooleanVar()
@@ -578,7 +572,7 @@ class MaalingPage(tk.Frame):  # Side for målinger
 
 
 
-        for x in range(8):
+        for x in range(4):
             maalTyp = tk.OptionMenu(self, self.var["variable{}".format(str(x))],
                                      "Udefinert", "Vanntrykk", "Lufttrykk", "Vannstrøm", "Vanntemp")
             maalTyp.grid(row=(x+1), column=1)
