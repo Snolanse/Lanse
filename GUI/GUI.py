@@ -156,11 +156,11 @@ def adcRead():  # Funksjon for avlesning av analoge innganger
                         lufttrykk = round(((20/1023)* a), 2)
                         app.frames[MaalingPage].var3['variable' + str(i)].set(str(lufttrykk) + ' Bar')
                         sendDict['lufttrykk'] = float(lufttrykk)
-                   elif app.frames[MaalingPage].var["variable" + str(i)].get() == "Vannstrøm":
+                    elif app.frames[MaalingPage].var["variable" + str(i)].get() == "Vannstrøm":
                         flow = round(((500/1023)* a), 2)
                         app.frames[MaalingPage].var3['variable' + str(i)].set(str(flow) + ' l/sek')
                         sendDict['flow'] = float(flow)
-                   elif app.frames[MaalingPage].var["variable" + str(i)].get() == "Vanntemp":
+                    elif app.frames[MaalingPage].var["variable" + str(i)].get() == "Vanntemp":
                         temperatur_vann = round(((500/1023)* a), 2)
                         app.frames[MaalingPage].var3['variable' + str(i)].set(str(temperatur_vann) + ' ºC')
                         sendDict['temperatur_vann'] = float(temperatur_vann)
