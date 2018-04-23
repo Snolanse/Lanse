@@ -149,13 +149,13 @@ def adcRead():  # Funksjon for avlesning av analoge innganger
                     app.frames[MaalingPage].var3['variable' + str(i)].set(a)
                     print(app.frames[MaalingPage].var["variable" + str(i)].get())
                     if app.frames[MaalingPage].var["variable" + str(i)].get() == "Vanntrykk":
-                        vanntrykk = (50/1023)* a
+                        vanntrykk = round(((50/1023)* a), 2)
                         app.frames[MaalingPage].var3['variable' + str(i)].set(str(vanntrykk) + ' Bar')
-                        sendDict['vanntrykk'] = int(vanntrykk)
+                        sendDict['vanntrykk'] = float(vanntrykk)
                     elif app.frames[MaalingPage].var["variable" + str(i)].get() == "Lufttrykk":
                         lufttrykk = (20/1023)* a
                         app.frames[MaalingPage].var3['variable' + str(i)].set(str(lufttrykk) + ' Bar')
-                        sendDict['lufttrykk'] = int(lufttrykk)
+                        sendDict['lufttrykk'] = float(lufttrykk)
                     #with open(analoge_maalinger, "r") as f:  # lagrer målinger
                     #    f.write(str(a))
                     #    f.close()
