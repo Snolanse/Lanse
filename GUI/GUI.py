@@ -206,7 +206,10 @@ def Viking_V3_styring():  # Utkast  #fremdeles utkast
                     blinky.stengVann()
                 else:
                     blinky.startVann()
-                    if serverDict["lanse"]['modus'] == 2:
+                    if serverDict["lanse"]['modus'] == 1:
+                        blinky.on_off(0,blinky.Steg1)
+                        blinky.on_off(0,blinky.Steg2)
+                     elif serverDict["lanse"]['modus'] == 2:
                         blinky.on_off(1,blinky.Steg1)
                         blinky.on_off(0,blinky.Steg2)
                     elif serverDict["lanse"]['modus'] == 3:
