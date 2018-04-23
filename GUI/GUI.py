@@ -182,7 +182,7 @@ def sendTilServer(data):  # Funksjon for sending av data til server
 
     global serverDict
     for x in data:
-        serverDict[x] = data[x]
+        serverDict["lanse"][x] = data[x]
 
     csrf.serverSend('bronn'+str(placement), data)
 
