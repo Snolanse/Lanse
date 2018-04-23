@@ -147,11 +147,12 @@ def adcRead():  # Funksjon for avlesning av analoge innganger
                 if app.frames[MaalingPage].var2['variable' + str(i)].get() == True:
                     a = ADC.lesADC(i)
                     app.frames[MaalingPage].var3['variable' + str(i)].set(a)
-                    if app.frames[MaalingPage].var["variable" + str(i)] == "Vanntrykk":
+                    print(app.frames[MaalingPage].var["variable" + str(i)].get())
+                    if app.frames[MaalingPage].var["variable" + str(i)].get() == "Vanntrykk":
                         vanntrykk = (50/1023)* a
                         app.frames[MaalingPage].var3['variable' + str(i)].set(str(vanntrykk) + ' Bar')
                         sendDict['vanntrykk'] = int(vanntrykk)
-                    elif app.frames[MaalingPage].var["variable" + str(i)] == "Lufttrykk":
+                    elif app.frames[MaalingPage].var["variable" + str(i)].get() == "Lufttrykk":
                         lufttrykk = (20/1023)* a
                         app.frames[MaalingPage].var3['variable' + str(i)].set(str(lufttrykk) + ' Bar')
                         sendDict['lufttrykk'] = int(lufttrykk)
@@ -173,6 +174,7 @@ def sendTilServer(data):  # Funksjon for sending av data til server
     global serverDict
     for x in data:
         serverDict[x] = data[x]
+
 
 def sendTilServerThreaded():
     global sendDict
