@@ -190,7 +190,7 @@ def sendTilServerThreaded():
         if len(sendDict) > 0:
             sendTilServer(sendDict)
             sendDict = {}
-        time.sleep(10)
+        time.sleep(2)
 
 
 def hentFraServer():  # Funksjon for henting fra server, for threading
