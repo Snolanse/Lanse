@@ -598,7 +598,7 @@ class MaalingPage(tk.Frame):  # Side for målinger
         self.var = {}
         self.var2 = {}
         self.var3 = {}
-        for x in range(4):
+        for x in range(8):
             self.var["variable{}".format(str(x))] = tk.StringVar()
             self.var["variable{}".format(str(x))].set(defVal)
             self.var2["variable{}".format(str(x))] = tk.BooleanVar()
@@ -607,7 +607,7 @@ class MaalingPage(tk.Frame):  # Side for målinger
 
 
 
-        for x in range(4):
+        for x in range(8):
             maalTyp = tk.OptionMenu(self, self.var["variable{}".format(str(x))],
                                      "Udefinert", "Vanntrykk", "Lufttrykk", "Vannstrøm", "Vanntemp")
             maalTyp.grid(row=(x+1), column=1)

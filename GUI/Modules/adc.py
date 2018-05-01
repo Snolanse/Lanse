@@ -1,6 +1,5 @@
 import Adafruit_GPIO.SPI as SPI
 from Modules.MCP3008 import MCP3008
-import time
 
 # Software SPI
 # CLK  = 18

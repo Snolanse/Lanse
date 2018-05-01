@@ -2,11 +2,11 @@ import RPi.GPIO as GPIO
 GPIO.setwarnings(False)
 import time
     
-Luft = 29
-Steg2 = 31
-Steg1 = 33
-Vann1 = 37
-Vann2 = 35
+Luft = 7
+Steg2 = 11
+Steg1 = 13
+Vann1 = 15
+Vann2 = 33
 
 GPIO.setmode(GPIO.BOARD)  # Adresser pinner etter nummer
 GPIO.setup(Luft, GPIO.OUT)  # Set pinmode as output
@@ -37,4 +37,3 @@ def startVann():
     GPIO.output(Luft,GPIO.HIGH)
     GPIO.output(Vann2,GPIO.HIGH)
     GPIO.output(Vann1,GPIO.HIGH)
-   
