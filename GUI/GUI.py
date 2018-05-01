@@ -446,11 +446,13 @@ class SnTypePage2(tk.Frame): # Snowgun type page
         button0.grid(row=1, sticky="W")
 
         button1 = tk.Button(self, text="Snökanon TG3",
-                                command=lambda:lanseType("Snokanon TG3", 0, controller))
+                                command=lambda:[controller.frames[StyringPage].show_frame(tg3ManPage),
+                                                lanseType("Snokanon TG3", 0, controller)])
         button1.grid(row=2, sticky="W")
 
         button2 = tk.Button(self, text="Viking V2",
-                                command=lambda: lanseType("Viking V2", 0, controller))
+                                command=lambda:[controller.frames[StyringPage].show_frame(vikingManPage),
+                                                lanseType("Viking V2", 0, controller)])
         button2.grid(row=3,sticky="W")
 
 
@@ -502,7 +504,7 @@ class PlacementPage(tk.Frame):  # This has to be cleaned up
 
         toolbar = tk.Frame(self, bg="grey")
 
-        label = tk.Label(self, text="Hvor er lansa plassert?", font=LARGE_FONT)
+        label = tk.Label(self, text="Hvor er snølansen plassert?", font=LARGE_FONT)
         label.pack(side="bottom")
 
         h=4
@@ -634,10 +636,10 @@ class StyringPage(tk.Frame):  # Side for styring
         manButton.pack(side=TOP, padx=2, pady=2)
 
         # For testing
-        byttButton = tk.Button(self, text="TG3", command=lambda: self.show_frame(tg3ManPage))
-        byttButton.pack(side="bottom", padx=2, pady=2)
-        battButton = tk.Button(self, text="VIKING", command=lambda: self.show_frame(vikingManPage))
-        battButton.pack(side="bottom", padx=2, pady=2)
+        # byttButton = tk.Button(self, text="TG3", command=lambda: self.show_frame(tg3ManPage))
+        # byttButton.pack(side="bottom", padx=2, pady=2)
+        # battButton = tk.Button(self, text="VIKING", command=lambda: self.show_frame(vikingManPage))
+        # battButton.pack(side="bottom", padx=2, pady=2)
 
         # Auto styring kommer an på lansevalg
 
@@ -656,7 +658,12 @@ class StyringPage(tk.Frame):  # Side for styring
             frame.grid(row=0, column=0, sticky="nsew")
 
         # StyringPage.show_frame(self, vikingManPage)  # Starting page
-        self.show_frame(vikingManPage)
+        if lanse_type == "Viking V2":
+            self.show_frame(vikingManPage)
+        elif lanse_type == "Snokanon TG3":
+            self.show_frame(tg3ManPage)
+        else:
+            self.show_frame(Home)
 
 
     def show_frame(self, cont):
@@ -752,17 +759,19 @@ class Home(tk.Frame):  # Main page
 #"Main loop"------------------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
 
-    tSH = Thread(target=hentFraServer, daemon=True)
-    tSH.start()
+    # tSH = Thread(target=hentFraServer, daemon=True)
+    # tSH.start()
 
     app = AppGui()
 
-    t = Thread(target=adcRead, daemon=True)  # Lager en thread for en spesifikk oppgave
-    t.start()  # Starter threaden
+
 
     if rpi == 1:
         tREG = Thread(target=Viking_V3_styring, daemon=True)
         tREG.start()
+
+        t = Thread(target=adcRead, daemon=True)  # Lager en thread for en spesifikk oppgave
+        t.start()  # Starter threaden
 
         tSDS = Thread(target=sendTilServerThreaded, daemon=True)
         tSDS.start()
