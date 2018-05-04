@@ -1,0 +1,17 @@
+sudo apt-get install git -y
+git clone https://github.com/Snolanse/Lanse.git
+
+cd Lanse
+sudo chmod +x oppsett.sh
+sh oppsett.sh
+
+sudo raspi-config
+velg 5 Interfacing options
+velg P4 SPI
+velg Yes
+
+velg 3 boot options
+velg -desktop / CLI
+velg Desktop Autologin
+velg Finish
+velg Yes	Raspberry vil nå reboote

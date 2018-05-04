@@ -1,0 +1,44 @@
+sudo apt-get update -y
+sudo apt-get upgrade -y
+sudo apt-get install python3 -y
+
+Om man skal ha desktop:
+	sudo apt-get install --no-install-recommends xserver-xorg -y
+	sudo apt-get install --no-install-recommends xinit -y
+	sudo apt-get install raspberrypi-ui-mods -y
+	sudo apt-get install lightdm -y
+
+	sudo apt-get install python3-tk -y
+
+sudo apt-get install python3-requests -y
+sudo apt-get install python3-numpy -y
+sudo apt-get install python3-pip -y
+sudo apt-get install python3-rpi.gpio
+
+
+sudo apt-get install build-essential python-dev python-smbus python-pip -y
+sudo pip3 install adafruit-mcp3008
+
+rm pigpio.zip
+sudo rm -rf PIGPIO
+wget abyz.me.uk/rpi/pigpio/pigpio.zip
+unzip pigpio.zip
+cd PIGPIO
+make
+sudo make install
+cd ..
+
+sudo apt-get install git -y
+git clone https://github.com/Snolanse/Lanse.git
+
+sudo raspi-config
+velg 5 Interfacing options
+velg P4 SPI
+velg Yes
+
+velg 3 boot options
+velg -desktop / CLI
+velg Desktop Autologin
+velg Finish
+velg Yes	Raspberry vil nå reboote
+
