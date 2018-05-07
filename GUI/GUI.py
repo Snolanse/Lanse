@@ -14,7 +14,7 @@ if os.name == "posix" and platform.system() == "Linux":  # Check system
     from Modules import pwm as PWM
     import RPi.GPIO as GPIO
     GPIO.setwarnings(False)
-    from Modules import blinky
+    from Modules import relestyring
     rpi = 1
     # os.system("sudo pigpiod")
     # PWM.hpwm(500000,750000)
@@ -228,23 +228,23 @@ def Viking_V3_styring():  # Utkast  #fremdeles utkast
             if serverDict["lanse"]['auto_man'] == 0:  # Sjekk om den er i auto eller manuell
                 print("Stiller inn til ønsket manuelt steg")
                 if serverDict["lanse"]['modus'] == 0:
-                    blinky.on_off(0,blinky.Steg1)
-                    blinky.on_off(0,blinky.Steg2)
-                    blinky.stengVann()
+                    relestyring.on_off(0,relestyring.Steg1)
+                    relestyring.on_off(0,relestyring.Steg2)
+                    relestyring.stengVann()
                 else:
-                    blinky.startVann()
+                    relestyring.startVann()
                     if serverDict["lanse"]['modus'] == 1:
-                        blinky.on_off(0,blinky.Steg1)
-                        blinky.on_off(0,blinky.Steg2)
+                        relestyring.on_off(0,relestyring.Steg1)
+                        relestyring.on_off(0,relestyring.Steg2)
                     elif serverDict["lanse"]['modus'] == 2:
-                        blinky.on_off(1,blinky.Steg1)
-                        blinky.on_off(0,blinky.Steg2)
+                        relestyring.on_off(1,relestyring.Steg1)
+                        relestyring.on_off(0,relestyring.Steg2)
                     elif serverDict["lanse"]['modus'] == 3:
-                        blinky.on_off(0,blinky.Steg1)
-                        blinky.on_off(1,blinky.Steg2)
+                        relestyring.on_off(0,relestyring.Steg1)
+                        relestyring.on_off(1,relestyring.Steg2)
                     elif serverDict["lanse"]['modus'] == 4:
-                        blinky.on_off(1,blinky.Steg1)
-                        blinky.on_off(1,blinky.Steg2)
+                        relestyring.on_off(1,relestyring.Steg1)
+                        relestyring.on_off(1,relestyring.Steg2)
         
             elif serverDict["lanse"]['auto_man'] == None:
                 print("Feil: Står verken i auto eller man")
@@ -254,42 +254,42 @@ def Viking_V3_styring():  # Utkast  #fremdeles utkast
                     # Sjekke om det er en endelanse, hvis det er det: ikke stopp men laveste steg?
                     if serverDict['lanse']['plassering_bronn'] == 19 or serverDict['lanse']['plassering_bronn'] == 27:
                          print('setter i laveste steg pga endelanse')
-                         blinky.on_off(0,blinky.Steg1)
-                         blinky.on_off(0,blinky.Steg2)
+                         relestyring.on_off(0,relestyring.Steg1)
+                         relestyring.on_off(0,relestyring.Steg2)
                     else:
                         print('avslutter produksjon pga vind')
-                        blinky.on_off(0,blinky.Steg1)
-                        blinky.on_off(0,blinky.Steg2)
-                        blinky.stengVann()
+                        relestyring.on_off(0,relestyring.Steg1)
+                        relestyring.on_off(0,relestyring.Steg2)
+                        relestyring.stengVann()
                 else:  # Styring i auto
                     wb = funksjoner.wetBulbMedAtmTrykk(serverDict['verstasjon']['hum'],serverDict['verstasjon']['temp_2'],serverDict['verstasjon']['press'])
                     if wb <= -7:
                         print("Perfekte forhold, høyeste steg")
-                        blinky.startVann()
-                        blinky.on_off(1,blinky.Steg1)
-                        blinky.on_off(1,blinky.Steg2)
+                        relestyring.startVann()
+                        relestyring.on_off(1,relestyring.Steg1)
+                        relestyring.on_off(1,relestyring.Steg2)
                     elif wb > -7 and wb <= -5:
                         print("Greie forhold, middels steg") #hva er middels steg?
-                        blinky.startVann()
-                        blinky.on_off(1,blinky.Steg1)
-                        blinky.on_off(0,blinky.Steg2)
+                        relestyring.startVann()
+                        relestyring.on_off(1,relestyring.Steg1)
+                        relestyring.on_off(0,relestyring.Steg2)
                     elif wb > -5 and wb <= -3:
                         print("Dårlige forhold, laveste steg")
-                        blinky.startVann()
-                        blinky.on_off(0,blinky.Steg1)
-                        blinky.on_off(0,blinky.Steg2)
+                        relestyring.startVann()
+                        relestyring.on_off(0,relestyring.Steg1)
+                        relestyring.on_off(0,relestyring.Steg2)
                     else:
                         print("Forferdelige forhold, stopper produksjon")
                         # Sjekke om det er en endelanse, hvis det er det: ikke stopp men laveste steg?
                         if serverDict['lanse']['plassering_bronn'] == 19 or serverDict['lanse']['plassering_bronn'] == 27:
                             print('setter i laveste steg pga endelanse')
-                            blinky.on_off(0,blinky.Steg1)
-                            blinky.on_off(0,blinky.Steg2)
+                            relestyring.on_off(0,relestyring.Steg1)
+                            relestyring.on_off(0,relestyring.Steg2)
                         else:
                             print('avslutter produksjon')
-                            blinky.on_off(0,blinky.Steg1)
-                            blinky.on_off(0,blinky.Steg2)
-                            blinky.stengVann()
+                            relestyring.on_off(0,relestyring.Steg1)
+                            relestyring.on_off(0,relestyring.Steg2)
+                            relestyring.stengVann()
             time.sleep(1)
 
         except reguleringsException:
@@ -598,7 +598,7 @@ class MaalingPage(tk.Frame):  # Side for målinger
         self.var = {}
         self.var2 = {}
         self.var3 = {}
-        for x in range(8):
+        for x in range(4):
             self.var["variable{}".format(str(x))] = tk.StringVar()
             self.var["variable{}".format(str(x))].set(defVal)
             self.var2["variable{}".format(str(x))] = tk.BooleanVar()
@@ -607,7 +607,7 @@ class MaalingPage(tk.Frame):  # Side for målinger
 
 
 
-        for x in range(8):
+        for x in range(4):
             maalTyp = tk.OptionMenu(self, self.var["variable{}".format(str(x))],
                                      "Udefinert", "Vanntrykk", "Lufttrykk", "Vannstrøm", "Vanntemp")
             maalTyp.grid(row=(x+1), column=1)

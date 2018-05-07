@@ -5,7 +5,8 @@ import time
 global gyldigServerData
 gyldigServerData = 1
 
-def serverCom(bronnid, get, sdata):     #grunnoppsett for kommunikasjon med serveren
+#grunnoppsett for kommunikasjon med serveren
+def serverCom(bronnid, get, sdata):
 
     url1 = "http://158.38.120.54:8000/csrf"
     url2 = "http://158.38.120.54:8000/data"
@@ -13,13 +14,14 @@ def serverCom(bronnid, get, sdata):     #grunnoppsett for kommunikasjon med serv
     client.get(url1)
     csrftoken = client.cookies['csrftoken']
 
-    l_data = dict(csrfmiddlewaretoken=csrftoken, bronnid=bronnid, timestamp=time.time(), get = get, next='/')
+    l_data = dict(csrfmiddlewaretoken=csrftoken,
+                  bronnid=bronnid,
+                  timestamp=time.time(),
+                  get = get, next='/')
     
     if len(sdata) != 0:
         for x in sdata:
             l_data[x] = sdata[x]
-
-
 
     r = client.post(url2, data=l_data, headers=dict(Referer=url2))
     return(json.loads(r.content.decode()))
