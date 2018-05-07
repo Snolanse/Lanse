@@ -759,8 +759,8 @@ class Home(tk.Frame):  # Main page
 #"Main loop"------------------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
 
-    # tSH = Thread(target=hentFraServer, daemon=True)
-    # tSH.start()
+    tSH = Thread(target=hentFraServer, daemon=True)
+    tSH.start()
 
     app = AppGui()
 
