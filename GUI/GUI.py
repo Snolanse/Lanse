@@ -254,10 +254,12 @@ def Viking_V3_styring():  # Utkast  #fremdeles utkast
                          print('setter i laveste steg pga endelanse')
                          relestyring.on_off(0,relestyring.Steg1)
                          relestyring.on_off(0,relestyring.Steg2)
+                         sendDict['modus'] = 1
                     else:
                         print('avslutter produksjon pga vind')
                         relestyring.on_off(0,relestyring.Steg1)
                         relestyring.on_off(0,relestyring.Steg2)
+                        sendDict['modus'] = 0
                         relestyring.stengVann()
                 else:  # Styring i auto
                     wb = funksjoner.wetBulbMedAtmTrykk(serverDict['verstasjon']['hum'],serverDict['verstasjon']['temp_2'],serverDict['verstasjon']['press'])
@@ -266,16 +268,19 @@ def Viking_V3_styring():  # Utkast  #fremdeles utkast
                         relestyring.startVann()
                         relestyring.on_off(1,relestyring.Steg1)
                         relestyring.on_off(1,relestyring.Steg2)
+                        sendDict['modus'] = 4
                     elif wb > -7 and wb <= -5:
                         print("Greie forhold, middels steg") #hva er middels steg?
                         relestyring.startVann()
                         relestyring.on_off(1,relestyring.Steg1)
                         relestyring.on_off(0,relestyring.Steg2)
+                        sendDict['modus'] = 2
                     elif wb > -5 and wb <= -3:
                         print("Dårlige forhold, laveste steg")
                         relestyring.startVann()
                         relestyring.on_off(0,relestyring.Steg1)
                         relestyring.on_off(0,relestyring.Steg2)
+                        sendDict['modus'] = 1
                     else:
                         print("Forferdelige forhold, stopper produksjon")
                         # Sjekke om det er en endelanse, hvis det er det: ikke stopp men laveste steg?
@@ -283,10 +288,12 @@ def Viking_V3_styring():  # Utkast  #fremdeles utkast
                             print('setter i laveste steg pga endelanse')
                             relestyring.on_off(0,relestyring.Steg1)
                             relestyring.on_off(0,relestyring.Steg2)
+                            sendDict['modus'] = 1
                         else:
                             print('avslutter produksjon')
                             relestyring.on_off(0,relestyring.Steg1)
                             relestyring.on_off(0,relestyring.Steg2)
+                            sendDict['modus'] = 0
                             relestyring.stengVann()
             time.sleep(1)
 
