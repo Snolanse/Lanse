@@ -151,11 +151,11 @@ def adcRead():  # Funksjon for avlesning av analoge innganger
                     app.frames[MaalingPage].var3['variable' + str(i)].set(a)
                     print(app.frames[MaalingPage].var["variable" + str(i)].get())
                     if app.frames[MaalingPage].var["variable" + str(i)].get() == "Vanntrykk":
-                        vanntrykk = round(((50/1023)* a), 2)
+                        vanntrykk = round(((60/1023)* a), 2)
                         app.frames[MaalingPage].var3['variable' + str(i)].set(str(vanntrykk) + ' Bar')
                         sendDict['vanntrykk'] = float(vanntrykk)
                     elif app.frames[MaalingPage].var["variable" + str(i)].get() == "Lufttrykk":
-                        lufttrykk = round(((20/1023)* a), 2)
+                        lufttrykk = round(((16/1023)* a), 2)
                         app.frames[MaalingPage].var3['variable' + str(i)].set(str(lufttrykk) + ' Bar')
                         sendDict['lufttrykk'] = float(lufttrykk)
                     elif app.frames[MaalingPage].var["variable" + str(i)].get() == "Vannstrøm":
@@ -185,8 +185,6 @@ def sendTilServer(data):  # Funksjon for sending av data til server
         serverDict["lanse"][x] = data[x]
 
     csrf.serverSend('bronn'+str(placement), data)
-
-
 
 
 def sendTilServerThreaded():
