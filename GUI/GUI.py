@@ -213,6 +213,18 @@ def hentFraServer():  # Funksjon for henting fra server, for threading
             # print(serverDict)
         time.sleep(4)
 
+def oppd_reg_steg(steg):
+    global serverDict
+    global sendDict
+    if 'modus' in sendDict:
+        if sendDict['modus'] != steg:
+            sendDict['modus'] = steg
+            serverDict["lanse"]['modus'] = steg
+    else:
+        if serverDict["lanse"]['modus'] != steg:
+            sendDict['modus'] = steg
+            serverDict["lanse"]['modus'] = steg
+
 
 def Viking_V3_styring():  # Utkast  #fremdeles utkast
     while True:
@@ -254,33 +266,46 @@ def Viking_V3_styring():  # Utkast  #fremdeles utkast
                          print('setter i laveste steg pga endelanse')
                          relestyring.on_off(0,relestyring.Steg1)
                          relestyring.on_off(0,relestyring.Steg2)
-                         sendDict['modus'] = 1
+                         oppd_reg_steg(1)
+
                     else:
                         print('avslutter produksjon pga vind')
                         relestyring.on_off(0,relestyring.Steg1)
                         relestyring.on_off(0,relestyring.Steg2)
-                        sendDict['modus'] = 0
+                        oppd_reg_steg(0)
+                        
                         relestyring.stengVann()
                 else:  # Styring i auto
                     wb = funksjoner.wetBulbMedAtmTrykk(serverDict['verstasjon']['hum'],serverDict['verstasjon']['temp_2'],serverDict['verstasjon']['press'])
-                    if wb <= -7:
+
+                    if wb <= -9:
                         print("Perfekte forhold, høyeste steg")
                         relestyring.startVann()
                         relestyring.on_off(1,relestyring.Steg1)
                         relestyring.on_off(1,relestyring.Steg2)
-                        sendDict['modus'] = 4
+                        oppd_reg_steg(4)
+
+                    elif wb > -9 and wb <= -7:
+                        print("Greie forhold, middels høyt steg") 
+                        relestyring.startVann()
+                        relestyring.on_off(0,relestyring.Steg1)
+                        relestyring.on_off(1,relestyring.Steg2)
+                        oppd_reg_steg(3)
+
                     elif wb > -7 and wb <= -5:
-                        print("Greie forhold, middels steg") #hva er middels steg?
+                        print("Greie forhold, middels lavt steg") 
                         relestyring.startVann()
                         relestyring.on_off(1,relestyring.Steg1)
                         relestyring.on_off(0,relestyring.Steg2)
-                        sendDict['modus'] = 2
+                        oppd_reg_steg(2)
+
                     elif wb > -5 and wb <= -3:
                         print("Dårlige forhold, laveste steg")
                         relestyring.startVann()
                         relestyring.on_off(0,relestyring.Steg1)
                         relestyring.on_off(0,relestyring.Steg2)
-                        sendDict['modus'] = 1
+                        oppd_reg_steg(1)
+
                     else:
                         print("Forferdelige forhold, stopper produksjon")
                         # Sjekke om det er en endelanse, hvis det er det: ikke stopp men laveste steg?
@@ -288,12 +313,13 @@ def Viking_V3_styring():  # Utkast  #fremdeles utkast
                             print('setter i laveste steg pga endelanse')
                             relestyring.on_off(0,relestyring.Steg1)
                             relestyring.on_off(0,relestyring.Steg2)
-                            sendDict['modus'] = 1
+                            oppd_reg_steg(1)
+
                         else:
                             print('avslutter produksjon')
                             relestyring.on_off(0,relestyring.Steg1)
                             relestyring.on_off(0,relestyring.Steg2)
-                            sendDict['modus'] = 0
+                            oppd_reg_steg(0)
                             relestyring.stengVann()
             time.sleep(1)
 
