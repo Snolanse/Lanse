@@ -452,7 +452,7 @@ def Viking_V2_styring():
             print('venter på data')
             time.sleep(2)
 
-        time.sleep(0.05)
+        time.sleep(0.5)
 
 # Exeption Classes------------------------------------------------------------------------------------------------------
 
