@@ -6,7 +6,7 @@ Luft = 7
 Steg2 = 11
 Steg1 = 13
 Vann1 = 15
-Vann2 = 33
+Vann2 = 29
 
 DO0 = 37        # Digital Utgang 0, GPIO 26
 DO1 = 33        # Digital Utgang 1, GPIO 13
