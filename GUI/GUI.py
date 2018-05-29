@@ -383,7 +383,7 @@ def Viking_V2_styring():
                         wb = funksjoner.wetBulbMedAtmTrykk(serverDict['verstasjon']['hum'],serverDict['verstasjon']['temp_2'],serverDict['verstasjon']['press'])
                     
                         # 0 til 1
-                        if (serverDict["lanse"]['auto_man'] == 0 and wb <= -3) :
+                        if (serverDict["lanse"]['modus'] == 0 and wb <= -3) :
                             print("Dårlige forhold, laveste steg")
                             relestyring.startVann()
                             relestyring.on_off(0,relestyring.Steg1)
@@ -391,7 +391,7 @@ def Viking_V2_styring():
                             oppd_reg_steg(1)
                         
                         # 1 til 0
-                        if (serverDict["lanse"]['auto_man'] == 1 and wb >= (-3 + hysterese) ):
+                        if (serverDict["lanse"]['modus'] == 1 and wb >= (-3 + hysterese) ):
                             print('avslutter produksjon')
                             relestyring.on_off(0,relestyring.Steg1)
                             relestyring.on_off(0,relestyring.Steg2)
@@ -399,7 +399,7 @@ def Viking_V2_styring():
                             relestyring.stengVann()
 
                         # 1 til 2
-                        if (serverDict["lanse"]['auto_man'] == 1 and wb <= -5 ):
+                        if (serverDict["lanse"]['modus'] == 1 and wb <= -5 ):
                             print("Greie forhold, middels lavt steg") 
                             relestyring.startVann()
                             relestyring.on_off(1,relestyring.Steg1)
@@ -407,7 +407,7 @@ def Viking_V2_styring():
                             oppd_reg_steg(2)
 
                         # 2 til 1
-                        if (serverDict["lanse"]['auto_man'] == 2 and wb >= (-5 + hysterese)):
+                        if (serverDict["lanse"]['modus'] == 2 and wb >= (-5 + hysterese)):
                             print("Dårlige forhold, laveste steg")
                             relestyring.startVann()
                             relestyring.on_off(0,relestyring.Steg1)
@@ -415,7 +415,7 @@ def Viking_V2_styring():
                             oppd_reg_steg(1)
 
                         # 2 til 3
-                        if (serverDict["lanse"]['auto_man'] == 2 and wb <= -7 ):
+                        if (serverDict["lanse"]['modus'] == 2 and wb <= -7 ):
                             print("Greie forhold, middels høyt steg") 
                             relestyring.startVann()
                             relestyring.on_off(0,relestyring.Steg1)
@@ -423,7 +423,7 @@ def Viking_V2_styring():
                             oppd_reg_steg(3)
 
                         # 3 til 2
-                        if (serverDict["lanse"]['auto_man'] == 3 and wb >= (-7 + hysterese) ):
+                        if (serverDict["lanse"]['modus'] == 3 and wb >= (-7 + hysterese) ):
                             print("Greie forhold, middels lavt steg") 
                             relestyring.startVann()
                             relestyring.on_off(1,relestyring.Steg1)
@@ -431,7 +431,7 @@ def Viking_V2_styring():
                             oppd_reg_steg(2)
 
                         # 3 til 4
-                        if (serverDict["lanse"]['auto_man'] == 3 and wb <= -9):
+                        if (serverDict["lanse"]['modus'] == 3 and wb <= -9):
                             print("Perfekte forhold, høyeste steg")
                             relestyring.startVann()
                             relestyring.on_off(1,relestyring.Steg1)
@@ -439,7 +439,7 @@ def Viking_V2_styring():
                             oppd_reg_steg(4)
 
                         # 4 til 3
-                        if (serverDict["lanse"]['auto_man'] == 4 and wb >= (-9 + hysterese)):
+                        if (serverDict["lanse"]['modus'] == 4 and wb >= (-9 + hysterese)):
                             print("Greie forhold, middels høyt steg") 
                             relestyring.startVann()
                             relestyring.on_off(0,relestyring.Steg1)
