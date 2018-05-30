@@ -1,5 +1,5 @@
-import RPi.GPIO as GPIO
-GPIO.setwarnings(False)
+import RPi.GPIO as GPIO     # Importering av pakker
+GPIO.setwarnings(False)     # Fjern ubruklige advarsler
 
 DI0 = 36                    # Digital Inngang 0
 DI1 = 38                    # Digital Inngang 1
