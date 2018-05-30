@@ -2,11 +2,11 @@ import RPi.GPIO as GPIO
 GPIO.setwarnings(False)
 import time
     
-Luft = 7
-Steg2 = 11
-Steg1 = 13
-Vann1 = 15
-Vann2 = 33
+Luft = 7        # Digital Utgang 7, GPIO 04
+Steg2 = 11      # Digital Utgang 6, GPIO 17
+Steg1 = 13      # Digital Utgang 5, GPIO 27
+Vann1 = 15      # Digital Utgang 4, GPIO 22
+Vann2 = 31      # Digital Utgang 3, GPIO 05
 
 DO0 = 37        # Digital Utgang 0, GPIO 26
 DO1 = 33        # Digital Utgang 1, GPIO 13
@@ -46,6 +46,7 @@ def on_off(i, type):
 
 def avslutt():
     GPIO.cleanup()
+
 
 def stengVann():
     GPIO.output(Vann2,GPIO.LOW)

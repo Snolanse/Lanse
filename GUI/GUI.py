@@ -163,7 +163,7 @@ def adcRead():  # Funksjon for avlesning av analoge innganger
                         app.frames[MaalingPage].var3['variable' + str(i)].set(str(flow) + ' l/min')
                         sendDict['flow'] = float(flow)
                     elif app.frames[MaalingPage].var["variable" + str(i)].get() == "Vanntemp":
-                        temperatur_vann = round(((100/1023)* a), 2)
+                        temperatur_vann = round(((100/1023)* a), 2) -50
                         app.frames[MaalingPage].var3['variable' + str(i)].set(str(temperatur_vann) + ' ºC')
                         sendDict['temperatur_vann'] = float(temperatur_vann)
                     #with open(analoge_maalinger, "r") as f:  # lagrer målinger
@@ -213,6 +213,18 @@ def hentFraServer():  # Funksjon for henting fra server, for threading
             # print(serverDict)
         time.sleep(4)
 
+def oppd_reg_steg(steg):
+    global serverDict
+    global sendDict
+    if 'modus' in sendDict:
+        if sendDict['modus'] != steg:
+            sendDict['modus'] = steg
+            serverDict["lanse"]['modus'] = steg
+    else:
+        if serverDict["lanse"]['modus'] != steg:
+            sendDict['modus'] = steg
+            serverDict["lanse"]['modus'] = steg
+
 
 def Viking_V3_styring():  # Utkast  #fremdeles utkast
     while True:
@@ -254,33 +266,46 @@ def Viking_V3_styring():  # Utkast  #fremdeles utkast
                          print('setter i laveste steg pga endelanse')
                          relestyring.on_off(0,relestyring.Steg1)
                          relestyring.on_off(0,relestyring.Steg2)
-                         sendDict['modus'] = 1
+                         oppd_reg_steg(1)
+
                     else:
                         print('avslutter produksjon pga vind')
                         relestyring.on_off(0,relestyring.Steg1)
                         relestyring.on_off(0,relestyring.Steg2)
-                        sendDict['modus'] = 0
+                        oppd_reg_steg(0)
+                        
                         relestyring.stengVann()
                 else:  # Styring i auto
                     wb = funksjoner.wetBulbMedAtmTrykk(serverDict['verstasjon']['hum'],serverDict['verstasjon']['temp_2'],serverDict['verstasjon']['press'])
-                    if wb <= -7:
+
+                    if wb <= -9:
                         print("Perfekte forhold, høyeste steg")
                         relestyring.startVann()
                         relestyring.on_off(1,relestyring.Steg1)
                         relestyring.on_off(1,relestyring.Steg2)
-                        sendDict['modus'] = 4
+                        oppd_reg_steg(4)
+
+                    elif wb > -9 and wb <= -7:
+                        print("Greie forhold, middels høyt steg") 
+                        relestyring.startVann()
+                        relestyring.on_off(0,relestyring.Steg1)
+                        relestyring.on_off(1,relestyring.Steg2)
+                        oppd_reg_steg(3)
+
                     elif wb > -7 and wb <= -5:
-                        print("Greie forhold, middels steg") #hva er middels steg?
+                        print("Greie forhold, middels lavt steg") 
                         relestyring.startVann()
                         relestyring.on_off(1,relestyring.Steg1)
                         relestyring.on_off(0,relestyring.Steg2)
-                        sendDict['modus'] = 2
+                        oppd_reg_steg(2)
+
                     elif wb > -5 and wb <= -3:
                         print("Dårlige forhold, laveste steg")
                         relestyring.startVann()
                         relestyring.on_off(0,relestyring.Steg1)
                         relestyring.on_off(0,relestyring.Steg2)
-                        sendDict['modus'] = 1
+                        oppd_reg_steg(1)
+
                     else:
                         print("Forferdelige forhold, stopper produksjon")
                         # Sjekke om det er en endelanse, hvis det er det: ikke stopp men laveste steg?
@@ -288,12 +313,13 @@ def Viking_V3_styring():  # Utkast  #fremdeles utkast
                             print('setter i laveste steg pga endelanse')
                             relestyring.on_off(0,relestyring.Steg1)
                             relestyring.on_off(0,relestyring.Steg2)
-                            sendDict['modus'] = 1
+                            oppd_reg_steg(1)
+
                         else:
                             print('avslutter produksjon')
                             relestyring.on_off(0,relestyring.Steg1)
                             relestyring.on_off(0,relestyring.Steg2)
-                            sendDict['modus'] = 0
+                            oppd_reg_steg(0)
                             relestyring.stengVann()
             time.sleep(1)
 
@@ -301,6 +327,132 @@ def Viking_V3_styring():  # Utkast  #fremdeles utkast
             print('venter på data')
             time.sleep(2)
 
+def Viking_V2_styring():
+    hysterese = 0.5
+    while True:
+        try:
+            if len(serverDict) == 0:    #ser om den har noen styreparametre
+                raise reguleringsException('har ikke henta data fra server ')
+
+            if serverDict["lanse"]['auto_man'] == None:   #feilsjekk
+                print("Feil: Står verken i auto eller man")
+            else:
+
+                if serverDict["lanse"]['auto_man'] == 0:  # Sjekk om den er i auto eller manuell
+                    print("Stiller inn til ønsket manuelt steg")
+                    if serverDict["lanse"]['modus'] == 0:
+                        relestyring.on_off(0,relestyring.Steg1)
+                        relestyring.on_off(0,relestyring.Steg2)
+                        relestyring.stengVann()
+                    else:
+                        relestyring.startVann()
+                        if serverDict["lanse"]['modus'] == 1:   #steg 1
+                            relestyring.on_off(0,relestyring.Steg1)
+                            relestyring.on_off(0,relestyring.Steg2)
+                        elif serverDict["lanse"]['modus'] == 2: #steg 2
+                            relestyring.on_off(1,relestyring.Steg1)
+                            relestyring.on_off(0,relestyring.Steg2)
+                        elif serverDict["lanse"]['modus'] == 3: #steg 3
+                            relestyring.on_off(0,relestyring.Steg1)
+                            relestyring.on_off(1,relestyring.Steg2)
+                        elif serverDict["lanse"]['modus'] == 4: #steg 4
+                            relestyring.on_off(1,relestyring.Steg1)
+                            relestyring.on_off(1,relestyring.Steg2)
+
+                if serverDict["lanse"]['auto_man'] == 1:    #sjekker om lansen står i auto
+
+                    if (serverDict["verstasjon"]["wind"] >= 10):  # Sjekk om det er for sterk vind
+                            print("For sterk vind, stopp produksjon")
+                            # Sjekke om det er en endelanse, hvis det er det: ikke stopp men sett i laveste steg
+                            if serverDict['lanse']['plassering_bronn'] == 19 or serverDict['lanse']['plassering_bronn'] == 27:
+                                 print('setter i laveste steg pga endelanse')
+                                 relestyring.on_off(0,relestyring.Steg1)
+                                 relestyring.on_off(0,relestyring.Steg2)
+                                 oppd_reg_steg(1)
+
+                            else:
+                                print('avslutter produksjon pga vind')
+                                relestyring.on_off(0,relestyring.Steg1)
+                                relestyring.on_off(0,relestyring.Steg2)
+                                oppd_reg_steg(0)
+                        
+                                relestyring.stengVann()
+
+                    else:
+                        #rekner ut wetbulb
+                        wb = funksjoner.wetBulbMedAtmTrykk(serverDict['verstasjon']['hum'],serverDict['verstasjon']['temp_2'],serverDict['verstasjon']['press'])
+                    
+                        # 0 til 1
+                        if (serverDict["lanse"]['modus'] == 0 and wb <= -3) :
+                            print("Dårlige forhold, laveste steg")
+                            relestyring.startVann()
+                            relestyring.on_off(0,relestyring.Steg1)
+                            relestyring.on_off(0,relestyring.Steg2)
+                            oppd_reg_steg(1)
+                        
+                        # 1 til 0
+                        if (serverDict["lanse"]['modus'] == 1 and wb >= (-3 + hysterese) ):
+                            print('avslutter produksjon')
+                            relestyring.on_off(0,relestyring.Steg1)
+                            relestyring.on_off(0,relestyring.Steg2)
+                            oppd_reg_steg(0)
+                            relestyring.stengVann()
+
+                        # 1 til 2
+                        if (serverDict["lanse"]['modus'] == 1 and wb <= -5 ):
+                            print("Greie forhold, middels lavt steg") 
+                            relestyring.startVann()
+                            relestyring.on_off(1,relestyring.Steg1)
+                            relestyring.on_off(0,relestyring.Steg2)
+                            oppd_reg_steg(2)
+
+                        # 2 til 1
+                        if (serverDict["lanse"]['modus'] == 2 and wb >= (-5 + hysterese)):
+                            print("Dårlige forhold, laveste steg")
+                            relestyring.startVann()
+                            relestyring.on_off(0,relestyring.Steg1)
+                            relestyring.on_off(0,relestyring.Steg2)
+                            oppd_reg_steg(1)
+
+                        # 2 til 3
+                        if (serverDict["lanse"]['modus'] == 2 and wb <= -7 ):
+                            print("Greie forhold, middels høyt steg") 
+                            relestyring.startVann()
+                            relestyring.on_off(0,relestyring.Steg1)
+                            relestyring.on_off(1,relestyring.Steg2)
+                            oppd_reg_steg(3)
+
+                        # 3 til 2
+                        if (serverDict["lanse"]['modus'] == 3 and wb >= (-7 + hysterese) ):
+                            print("Greie forhold, middels lavt steg") 
+                            relestyring.startVann()
+                            relestyring.on_off(1,relestyring.Steg1)
+                            relestyring.on_off(0,relestyring.Steg2)
+                            oppd_reg_steg(2)
+
+                        # 3 til 4
+                        if (serverDict["lanse"]['modus'] == 3 and wb <= -9):
+                            print("Perfekte forhold, høyeste steg")
+                            relestyring.startVann()
+                            relestyring.on_off(1,relestyring.Steg1)
+                            relestyring.on_off(1,relestyring.Steg2)
+                            oppd_reg_steg(4)
+
+                        # 4 til 3
+                        if (serverDict["lanse"]['modus'] == 4 and wb >= (-9 + hysterese)):
+                            print("Greie forhold, middels høyt steg") 
+                            relestyring.startVann()
+                            relestyring.on_off(0,relestyring.Steg1)
+                            relestyring.on_off(1,relestyring.Steg2)
+                            oppd_reg_steg(3)
+
+
+
+        except reguleringsException:
+            print('venter på data')
+            time.sleep(2)
+
+        time.sleep(0.5)
 
 # Exeption Classes------------------------------------------------------------------------------------------------------
 
@@ -772,7 +924,7 @@ if __name__ == "__main__":
 
 
     if rpi == 1:
-        tREG = Thread(target=Viking_V3_styring, daemon=True)
+        tREG = Thread(target=Viking_V2_styring, daemon=True)
         tREG.start()
 
         t = Thread(target=adcRead, daemon=True)  # Lager en thread for en spesifikk oppgave
