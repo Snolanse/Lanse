@@ -31,6 +31,11 @@ auto_man = None
 serverDict = {}
 sendDict = {}
 
+# startinnstillinger som tillater kjøring av lansen i manuell ved manglende kontakt med serveren
+serverDict = {'lanse': {'auto_man': False, 'lufttrykk': 1021.6, 'plassering_bronn': 10, 'lanse_kategori_id': 2, 'temperatur': 13.7, 'lokal_maling': False, 'luftfukt': 100, 'ltrykk': 1018.3, 'id': 10, 'flow': 364.13, 'modus': 0, 'timestamp': 1527749300.690149, 'temperatur_vann': -36.9, 'temperatur_luft': 8.2, 'vanntrykk': 19.82},
+              'verstasjon': {'temp_2': 13.7, 'windDir': 138, 'temp2_1': 18.4, 'hum': 100, 'press': 1018.3, 'id': 1, 'windChill': 18.2, 'dew_2': 7.4, 'gust': 0.0, 'wind': 0.4, 'hum_2': 65.9, 'dew_1': 7.3, 'rain': 0.0, 'temp_1': 17.5, 'temp2_2': 20.8, 'rainRate': 0.0, 'dew': 10.8, 'hum_1': 51.1, 'timestamp': 1527748347.0, 'temp': 18.2},
+              'lansetype': {'lansetype': 'VikingV2', 'ant_steg': 5, 'id': 2, 'lanseid': 2}}
+
 creds = 'tempfile.temp' # Variable that becomes login data document
 lanse_info = "lanse.temp"  # Lagret lansetype
 plass_info = "plass.temp"  # Lagret plassering
@@ -207,7 +212,7 @@ def hentFraServer():  # Funksjon for henting fra server, for threading
 
     while True:
         try:
-            if placement == None:
+            if placement == None:3
                 print("Do nothing")
             else:
                 serverDictBuffer = csrf.serverHent("bronn" + str(placement))
