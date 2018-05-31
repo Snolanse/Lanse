@@ -381,7 +381,7 @@ def Viking_V2_styring():
                         else:
                             #rekner ut wetbulb
                             wb = funksjoner.wetBulbMedAtmTrykk(serverDict['verstasjon']['hum'],serverDict['verstasjon']['temp_2'],serverDict['verstasjon']['press'])
-                            if wb > -3 and (serverDict['lanse']['plassering_bronn'] != 19 or serverDict['lanse']['plassering_bronn'] != 27):
+                            if wb > -3 and serverDict['lanse']['plassering_bronn'] != 19 and serverDict['lanse']['plassering_bronn'] != 27:
                                 print('avslutter produksjon pga dårlige forhold')
                                 oppd_reg_steg(0)
                                 sendDict['auto_man'] = 0
