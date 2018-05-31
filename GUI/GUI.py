@@ -240,7 +240,7 @@ def oppd_reg_steg(steg):
             sendDict['modus'] = steg
             serverDict["lanse"]['modus'] = steg
 
-
+'''
 def Viking_V3_styring():  # Utkast  #fremdeles utkast
     while True:
         try:
@@ -341,6 +341,7 @@ def Viking_V3_styring():  # Utkast  #fremdeles utkast
         except reguleringsException:
             print('venter på data')
             time.sleep(2)
+'''
 
 def Viking_V2_styring():
     hysterese = 0.5
@@ -896,17 +897,22 @@ class vikingManPage(tk.Frame):  # Side for styring
 
         global serverDict
 
-        steg0Button = tk.Button(self, text="Steg 0", command=lambda: sendTilServer({'modus':0}))
+        steg0Button = tk.Button(self, text="Steg 0", command=lambda: buttonblock(0))
         steg0Button.pack(side=LEFT, padx=2, pady=2)
-        steg1Button = tk.Button(self, text="Steg 1", command=lambda: sendTilServer({'modus':1}))
+        steg1Button = tk.Button(self, text="Steg 1", command=lambda: buttonblock(1))
         steg1Button.pack(side=LEFT, padx=2, pady=2)
-        steg2Button = tk.Button(self, text="Steg 2", command=lambda: sendTilServer({'modus':2}))
+        steg2Button = tk.Button(self, text="Steg 2", command=lambda: buttonblock(2))
         steg2Button.pack(side=LEFT, padx=2, pady=2)
-        steg3Button = tk.Button(self, text="Steg 3", command=lambda: sendTilServer({'modus':3}))
+        steg3Button = tk.Button(self, text="Steg 3", command=lambda: buttonblock(3))
         steg3Button.pack(side=LEFT, padx=2, pady=2)
-        steg4Button = tk.Button(self, text="Steg 4", command=lambda: sendTilServer({'modus':4}))
+        steg4Button = tk.Button(self, text="Steg 4", command=lambda: buttonblock(4))
         steg4Button.pack(side=LEFT, padx=2, pady=2)
 
+def buttonblock(modu):
+    if serverDict['lanse']['auto_man'] == 1:
+        pass
+    else:
+        sendTilServer({'modus':modu})
 
 class tg3ManPage(tk.Frame):  # Side for styring
 
