@@ -346,7 +346,7 @@ def Viking_V2_styring():
     hysterese = 0.5
     while True:
         try:
-            if lanse_type == "TG3":
+            if lanse_type == "Snokanon TG3":
                 relestyring.on_off(0,relestyring.Steg1)
                 relestyring.on_off(0,relestyring.Steg2)
                 if len(serverDict) == 0:    #ser om den har noen styreparametre
