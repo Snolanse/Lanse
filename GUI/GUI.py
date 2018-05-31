@@ -908,7 +908,7 @@ class vikingManPage(tk.Frame):  # Side for styring
         steg4Button = tk.Button(self, text="Steg 4", command=lambda: buttonblock(4))
         steg4Button.pack(side=LEFT, padx=2, pady=2)
 
-def buttonblock(modu):
+def buttonblock(modu):  # funksjon som stopper knappene fra å fungere i auto
     if serverDict['lanse']['auto_man'] == 1:
         pass
     else:
