@@ -212,7 +212,7 @@ def hentFraServer():  # Funksjon for henting fra server, for threading
 
     while True:
         try:
-            if placement == None:3
+            if placement == None:
                 print("Do nothing")
             else:
                 serverDictBuffer = csrf.serverHent("bronn" + str(placement))
