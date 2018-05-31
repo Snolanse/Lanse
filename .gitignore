@@ -2,7 +2,14 @@
 GUI/.idea/workspace.xml
 GUI/.idea/inspectionProfiles/Project_Default.xml
 GUI/.idea/inspectionProfiles/Project_Default.xml
-*.xml
-*.xml
-*.xml
+<<<<<<< HEAD
 GUI/.idea/workspace.xml
+=======
+*.xml
+*.xml
+*.xml
+<<<<<<< HEAD
+GUI/.idea/workspace.xml
+=======
+>>>>>>> c21a1bdef32f5e58f80359f85e7fe31f46b75461
+>>>>>>> 8fc68f66804b3bced0a435515d25c2973b7b9a8f

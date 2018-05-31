@@ -168,7 +168,7 @@ def adcRead():  # Funksjon for avlesning av analoge innganger
                         app.frames[MaalingPage].var3['variable' + str(i)].set(str(flow) + ' l/min')
                         sendDict['flow'] = float(flow)
                     elif app.frames[MaalingPage].var["variable" + str(i)].get() == "Vanntemp":
-                        temperatur_vann = round(((100/1023)* a), 2) -50
+                        temperatur_vann = round(round(((100/1023)* a), 2) -50.0 , 2)
                         app.frames[MaalingPage].var3['variable' + str(i)].set(str(temperatur_vann) + ' ºC')
                         sendDict['temperatur_vann'] = float(temperatur_vann)
                     #with open(analoge_maalinger, "r") as f:  # lagrer målinger
@@ -449,6 +449,7 @@ def Viking_V2_styring():
                                 relestyring.on_off(0,relestyring.Steg1)
                                 relestyring.on_off(0,relestyring.Steg2)
                                 oppd_reg_steg(1)
+                                continue
 
                             # 1 til 0
                             if (serverDict["lanse"]['modus'] == 1 and wb >= (-3 + hysterese) ):
@@ -457,6 +458,7 @@ def Viking_V2_styring():
                                 relestyring.on_off(0,relestyring.Steg2)
                                 oppd_reg_steg(0)
                                 relestyring.stengVann()
+                                continue
 
                             # 1 til 2
                             if (serverDict["lanse"]['modus'] == 1 and wb <= -5 ):
@@ -465,6 +467,7 @@ def Viking_V2_styring():
                                 relestyring.on_off(1,relestyring.Steg1)
                                 relestyring.on_off(0,relestyring.Steg2)
                                 oppd_reg_steg(2)
+                                continue
 
                             # 2 til 1
                             if (serverDict["lanse"]['modus'] == 2 and wb >= (-5 + hysterese)):
@@ -473,6 +476,7 @@ def Viking_V2_styring():
                                 relestyring.on_off(0,relestyring.Steg1)
                                 relestyring.on_off(0,relestyring.Steg2)
                                 oppd_reg_steg(1)
+                                continue
 
                             # 2 til 3
                             if (serverDict["lanse"]['modus'] == 2 and wb <= -7 ):
@@ -481,6 +485,7 @@ def Viking_V2_styring():
                                 relestyring.on_off(0,relestyring.Steg1)
                                 relestyring.on_off(1,relestyring.Steg2)
                                 oppd_reg_steg(3)
+                                continue
 
                             # 3 til 2
                             if (serverDict["lanse"]['modus'] == 3 and wb >= (-7 + hysterese) ):
@@ -489,6 +494,7 @@ def Viking_V2_styring():
                                 relestyring.on_off(1,relestyring.Steg1)
                                 relestyring.on_off(0,relestyring.Steg2)
                                 oppd_reg_steg(2)
+                                continue
 
                             # 3 til 4
                             if (serverDict["lanse"]['modus'] == 3 and wb <= -9):
@@ -497,6 +503,7 @@ def Viking_V2_styring():
                                 relestyring.on_off(1,relestyring.Steg1)
                                 relestyring.on_off(1,relestyring.Steg2)
                                 oppd_reg_steg(4)
+                                continue
 
                             # 4 til 3
                             if (serverDict["lanse"]['modus'] == 4 and wb >= (-9 + hysterese)):
@@ -505,6 +512,7 @@ def Viking_V2_styring():
                                 relestyring.on_off(0,relestyring.Steg1)
                                 relestyring.on_off(1,relestyring.Steg2)
                                 oppd_reg_steg(3)
+                                continue
 
 
 
