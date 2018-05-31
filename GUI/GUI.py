@@ -213,13 +213,15 @@ def hentFraServer():  # Funksjon for henting fra server, for threading
                 serverDictBuffer = csrf.serverHent("bronn" + str(placement))
                 if serverDictBuffer == None:
                     print("Feil: Ugyldig serverdata")
+                    time.sleep(1)
                 else:
                     serverDict = serverDictBuffer
+                    time.sleep(4)
                 # print(serverDict)
-            time.sleep(4)
+
         except:
             time.sleep(2)
-            print('hentefeil')
+            print('kritisk hentefeil')
 
 def oppd_reg_steg(steg):
     global serverDict
