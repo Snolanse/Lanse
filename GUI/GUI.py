@@ -452,7 +452,7 @@ def Viking_V2_styring():
                                 continue
 
                             # 1 til 0
-                            if (serverDict["lanse"]['modus'] == 1 and wb >= (-3 + hysterese) ):
+                            if (serverDict["lanse"]['modus'] == 1 and wb >= (-3 + hysterese) and serverDict['lanse']['plassering_bronn'] != 19 and serverDict['lanse']['plassering_bronn'] != 27):
                                 print('avslutter produksjon')
                                 relestyring.on_off(0,relestyring.Steg1)
                                 relestyring.on_off(0,relestyring.Steg2)
