@@ -486,7 +486,7 @@ class AppGui(tk.Tk):  # Main GUI class (Dette er tydeligvis controller)
 
         toolbar = tk.Frame(self, bg="grey")
 
-        homeButton = tk.Button(toolbar, text="Home", command=lambda: self.show_frame(Home))
+        homeButton = tk.Button(toolbar, text="Hjem", command=lambda: self.show_frame(Home))
         homeButton.pack(side=LEFT, padx=2, pady=2)
         lanseButton = tk.Button(toolbar, text="Lansetype", command=lambda: self.show_frame(SnTypePage2))
         lanseButton.pack(side=LEFT, padx=2, pady=2)
@@ -846,15 +846,15 @@ class vikingManPage(tk.Frame):  # Side for styring
         global serverDict
 
         steg0Button = tk.Button(self, text="Steg 0", command=lambda: sendTilServer({'modus':0}))
-        steg0Button.grid(row=0, column=0, pady=2)
+        steg0Button.pack(side=LEFT, padx=2, pady=2)
         steg1Button = tk.Button(self, text="Steg 1", command=lambda: sendTilServer({'modus':1}))
-        steg1Button.grid(row=1, column=0, pady=2)
+        steg1Button.pack(side=LEFT, padx=2, pady=2)
         steg2Button = tk.Button(self, text="Steg 2", command=lambda: sendTilServer({'modus':2}))
-        steg2Button.grid(row=2, column=0, pady=2)
+        steg2Button.pack(side=LEFT, padx=2, pady=2)
         steg3Button = tk.Button(self, text="Steg 3", command=lambda: sendTilServer({'modus':3}))
-        steg3Button.grid(row=3, column=0, pady=2)
+        steg3Button.pack(side=LEFT, padx=2, pady=2)
         steg4Button = tk.Button(self, text="Steg 4", command=lambda: sendTilServer({'modus':4}))
-        steg4Button.grid(row=4, column=0, pady=2)
+        steg4Button.pack(side=LEFT, padx=2, pady=2)
 
 
 class tg3ManPage(tk.Frame):  # Side for styring
