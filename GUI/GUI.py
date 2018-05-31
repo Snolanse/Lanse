@@ -168,7 +168,7 @@ def adcRead():  # Funksjon for avlesning av analoge innganger
                         app.frames[MaalingPage].var3['variable' + str(i)].set(str(flow) + ' l/min')
                         sendDict['flow'] = float(flow)
                     elif app.frames[MaalingPage].var["variable" + str(i)].get() == "Vanntemp":
-                        temperatur_vann = round(round(((100/1023)* a), 2) -50, 2)
+                        temperatur_vann = round(round(((100/1023)* a), 2) -50.0 , 2)
                         app.frames[MaalingPage].var3['variable' + str(i)].set(str(temperatur_vann) + ' ºC')
                         sendDict['temperatur_vann'] = float(temperatur_vann)
                     #with open(analoge_maalinger, "r") as f:  # lagrer målinger
