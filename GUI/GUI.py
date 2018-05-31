@@ -190,10 +190,14 @@ def sendTilServer(data):  # Funksjon for sending av data til server
 def sendTilServerThreaded():
     global sendDict
     while True:
-        if len(sendDict) > 0:
-            sendTilServer(sendDict)
-            sendDict = {}
-        time.sleep(2)
+        try:
+            if len(sendDict) > 0:
+                sendTilServer(sendDict)
+                sendDict = {}
+            time.sleep(2)
+        except:
+            print('sendthreadfeil')
+            time.sleep(1)
 
 
 def hentFraServer():  # Funksjon for henting fra server, for threading
@@ -202,16 +206,20 @@ def hentFraServer():  # Funksjon for henting fra server, for threading
     global placement
 
     while True:
-        if placement == None:
-            print("Do nothing")
-        else:
-            serverDictBuffer = csrf.serverHent("bronn" + str(placement))
-            if serverDictBuffer == None:
-                print("Feil: Ugyldig serverdata")
+        try:
+            if placement == None:
+                print("Do nothing")
             else:
-                serverDict = serverDictBuffer
-            # print(serverDict)
-        time.sleep(4)
+                serverDictBuffer = csrf.serverHent("bronn" + str(placement))
+                if serverDictBuffer == None:
+                    print("Feil: Ugyldig serverdata")
+                else:
+                    serverDict = serverDictBuffer
+                # print(serverDict)
+            time.sleep(4)
+        except:
+            time.sleep(2)
+            print('hentefeil')
 
 def oppd_reg_steg(steg):
     global serverDict
