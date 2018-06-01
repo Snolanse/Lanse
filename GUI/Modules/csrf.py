@@ -8,8 +8,8 @@ gyldigServerData = 1
 #grunnoppsett for kommunikasjon med serveren
 def serverCom(bronnid, get, sdata):
 
-    url1 = "http://158.38.120.54:8000/csrf"
-    url2 = "http://158.38.120.54:8000/data"
+    url1 = "http://192.168.0.101:8000/csrf"
+    url2 = "http://192.168.0.101:8000/data"
     client = requests.session()
     client.get(url1)
     csrftoken = client.cookies['csrftoken']
